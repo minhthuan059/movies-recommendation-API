@@ -1,9 +1,9 @@
 package com.example.movies_recommendation_API.Jwt;
 
 
+import com.example.movies_recommendation_API.accounts.Account;
+import com.example.movies_recommendation_API.accounts.AccountService;
 import com.example.movies_recommendation_API.response.ResponseError;
-import com.example.movies_recommendation_API.user.User;
-import com.example.movies_recommendation_API.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +26,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -58,12 +58,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            User user = this.userService.getUserByUsername(username);
+            Account account = this.accountService.getAccountByUsername(username);
 
-            if (jwtService.validateToken(token, user)) {
+            if (jwtService.validateToken(token, account)) {
                 // Tạo đối tượng Authentication
                 UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+                        new UsernamePasswordAuthenticationToken(account, null, new ArrayList<>());
 
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

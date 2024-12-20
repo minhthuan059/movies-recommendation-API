@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.user;
+package com.example.movies_recommendation_API.accounts;
 
 import com.example.movies_recommendation_API.Jwt.JwtService;
 import com.example.movies_recommendation_API.oauth2.GoogleAuthService;
@@ -19,11 +19,11 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/user")
-public class UserController {
+@RequestMapping("/account")
+public class AccountController {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Autowired
     private JwtService jwtService;
@@ -36,22 +36,18 @@ public class UserController {
 
 
     @GetMapping("")
-    public ResponseEntity<?> getUsers() {
-        return ResponseEntity.ok().body(userService.getAllUsers());
+    public ResponseEntity<?> getAccounts() {
+        return ResponseEntity.ok().body(accountService.getAllAccounts());
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> postUsers() {
-        return ResponseEntity.ok().body(userService.getAllUsers());
-    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> postRegisterUser(@Valid @RequestBody UserCreateDTO user) {
-        return userService.createUser(user);
+    public ResponseEntity<?> postRegisterAccount(@Valid @RequestBody AccountCreateDTO account) {
+        return accountService.createAccount(account);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> postLogin(@RequestBody User loginRequest) {
+    public ResponseEntity<?> postLogin(@RequestBody Account loginRequest) {
         try {
             // Xác thực thông tin đăng nhập
             authenticationManager.authenticate(
@@ -59,13 +55,13 @@ public class UserController {
             );
 
             // Tải thông tin người dùng
-            User user = userService.getUserByUsername(loginRequest.getUsername());
+            Account account = accountService.getAccountByUsername(loginRequest.getUsername());
 
             // Tạo JWT token
-            String token = jwtService.generateToken(user);
+            String token = jwtService.generateToken(account);
 
             LoginResponseSuccess res = new LoginResponseSuccess("success");
-            res.setUsername(user.getUsername());
+            res.setUsername(account.getUsername());
             res.setToken(token);
             return ResponseEntity.ok().body(res);
         } catch (AuthenticationException e) {
@@ -99,8 +95,8 @@ public class UserController {
     public ResponseEntity<?> getProfile() {
         try {
             // Lấy thông tin từ SecurityContext
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            ResponseSuccess res = new ResponseSuccess("success", user);
+            Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            ResponseSuccess res = new ResponseSuccess("success", account);
 
             // Trả về thông tin người dùng
             return ResponseEntity.ok().body(res);

@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.user;
+package com.example.movies_recommendation_API.accounts;
 
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
@@ -13,53 +13,53 @@ import java.util.List;
 
 
 @Service
-public class UserService {
+public class AccountService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
     }
 
-    public void saveUser(User user) {
-        userRepository.save(user);
+    public void saveAccount(Account account) {
+        accountRepository.save(account);
     }
 
-    public User getUserByUsername(String name) {
-        return userRepository.findOneByUsername(name);
+    public Account getAccountByUsername(String name) {
+        return accountRepository.findOneByUsername(name);
     }
 
-    public User getUserByUsernameAndGoogleId(String name, String googleId) {
-        return userRepository.findOneByUsernameAndGoogleId(name, googleId);
+    public Account getAccountByUsernameAndGoogleId(String name, String googleId) {
+        return accountRepository.findOneByUsernameAndGoogleId(name, googleId);
     }
 
-    public User getUserByUsernameAndGoogleIdIsNull(String name) {
-        return userRepository.findOneByUsernameAndGoogleIdIsNull(name);
+    public Account getAccountByUsernameAndGoogleIdIsEmpty(String name) {
+        return accountRepository.findOneByUsernameAndGoogleIdIsEmpty(name);
     }
 
-    public User getUserByGoogleId(String googleId) {
-        return userRepository.findOneByGoogleId(googleId);
+    public Account getAccountByGoogleId(String googleId) {
+        return accountRepository.findOneByGoogleId(googleId);
     }
 
-    public ResponseEntity<?> createUser(UserCreateDTO userCreateDTO) {
+    public ResponseEntity<?> createAccount(AccountCreateDTO accountCreateDTO) {
         try {
-            if (userRepository.findOneByUsernameAndGoogleIdIsNull(userCreateDTO.getUsername()) != null) {
+            if (accountRepository.findOneByUsernameAndGoogleIdIsEmpty(accountCreateDTO.getUsername()) != null) {
                 ResponseError error = new ResponseError("error", "Username đã tồn tại.");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
             }
             else {
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                String encodedPassword = encoder.encode(userCreateDTO.getPassword());
-                User user = User.builder()
-                        .username(userCreateDTO.getUsername())
+                String encodedPassword = encoder.encode(accountCreateDTO.getPassword());
+                Account account = Account.builder()
+                        .username(accountCreateDTO.getUsername())
                         .password(encodedPassword)
-                        .email(userCreateDTO.getEmail())
+                        .email(accountCreateDTO.getEmail())
                         .createdAt(LocalDateTime.now())
                         .build();
                 // Gọi repository để lưu vào database
-                userRepository.save(user);
+                accountRepository.save(account);
                 ResponseSuccess res = new ResponseSuccess("success");
                 return ResponseEntity.status(HttpStatus.CREATED).body(res);
             }

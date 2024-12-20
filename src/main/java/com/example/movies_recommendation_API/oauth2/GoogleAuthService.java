@@ -1,10 +1,10 @@
 package com.example.movies_recommendation_API.oauth2;
 
 import com.example.movies_recommendation_API.Jwt.JwtService;
+import com.example.movies_recommendation_API.accounts.Account;
+import com.example.movies_recommendation_API.accounts.AccountService;
 import com.example.movies_recommendation_API.response.LoginResponseSuccess;
 import com.example.movies_recommendation_API.response.ResponseError;
-import com.example.movies_recommendation_API.user.User;
-import com.example.movies_recommendation_API.user.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -22,7 +22,7 @@ import java.util.Collections;
 public class GoogleAuthService {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Autowired
     private JwtService jwtService;
@@ -59,23 +59,23 @@ public class GoogleAuthService {
         String name = (String) payload.get("name");
 
         // Tìm hoặc tạo User
-        User user = userService.getUserByGoogleId(googleId);
-        if (user == null) {
-            user = User.builder()
+        Account account = accountService.getAccountByGoogleId(googleId);
+        if (account == null) {
+            account = Account.builder()
                     .googleId(googleId)
                     .email(email)
                     .username(name)
                     .password("") // Không cần mật khẩu cho tài khoản Google
                     .createdAt(LocalDateTime.now())
                     .build();
-            userService.saveUser(user);
+            accountService.saveAccount(account);
 
         }
 
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateToken(account);
         LoginResponseSuccess res = new LoginResponseSuccess("success");
         res.setToken(token);
-        res.setUsername(user.getUsername());
+        res.setUsername(account.getUsername());
         return ResponseEntity.ok().body(res);
     }
 }
