@@ -27,6 +27,8 @@ public class JwtService {
 
     private SecretKey getSecretKey() {
         String secretKey = environment.getProperty("JWT_SECRET_KEY");
+        String db = environment.getProperty("SPRING_DATA_MONGODB_URI");
+        System.out.println(db);
         byte[] keyBytes = Base64.getDecoder().decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
