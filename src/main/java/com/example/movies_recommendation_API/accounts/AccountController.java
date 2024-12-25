@@ -5,6 +5,7 @@ import com.example.movies_recommendation_API.oauth2.GoogleAuthService;
 import com.example.movies_recommendation_API.response.LoginResponseSuccess;
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -106,5 +107,17 @@ public class AccountController {
         }
 
     }
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<?> postRequestSendOTP (@RequestBody Map<String, String> body) throws MessagingException {
+        String email = body.get("email");
+        return accountService.createAndSendOTP(email);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?>  postRequestChangePassword (@RequestBody Map<String, String> body) {
+        return accountService.validateOtpAndResetPassword(body.get("email"), body.get("otp"), body.get("password"));
+    }
+
 
 }

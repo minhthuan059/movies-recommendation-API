@@ -10,8 +10,17 @@ import org.springframework.stereotype.Repository;
 interface AccountRepository  extends MongoRepository<Account, Long> {
     Account findOneByUsername(String username);
     Account findOneByGoogleId(String googleId);
+    Account findOneByEmail(@Param("email") String email);
     Account findOneByUsernameAndGoogleId(String username, String googleId);
+
+    @Query("{ 'email': ?0, '$or': [ { 'googleId': null }, { 'googleId': '' } ] }")
+    Account findOneByEmailAndGoogleIdIsEmpty(@Param("email") String email);
+
     @Query("{ 'username': ?0, '$or': [ { 'googleId': null }, { 'googleId': '' } ] }")
     Account findOneByUsernameAndGoogleIdIsEmpty(@Param("username") String username);
+
+    @Query("{ 'email': :#{#email}, 'googleId': { $exists: true, $ne: '' } }")
+    Account findOneByEmailAndGoogleIdIsNotEmpty(@Param("email") String email);
+
 }
 

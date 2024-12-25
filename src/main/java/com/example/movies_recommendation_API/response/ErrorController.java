@@ -1,5 +1,6 @@
 package com.example.movies_recommendation_API.response;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,4 +38,13 @@ public class ErrorController  {
         error.setMessage(errorMessages.toString().substring(0, errorMessages.toString().length() - 1));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<?> handleMessagingException(MessagingException e) {
+        ResponseError error = new ResponseError();
+        error.setStatus("error");
+        error.setMessage("Lỗi không gửi được OTP.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 }
