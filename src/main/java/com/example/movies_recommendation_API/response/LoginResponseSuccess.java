@@ -11,13 +11,9 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseSuccess {
-    private String status;
+    private final String status = "success";
     private String token;
     private final Date timestamp = new Date();
     private String username;
-
-    public LoginResponseSuccess(String status) {
-        this.status = status;
-    }
 }
 

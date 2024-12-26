@@ -84,7 +84,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private void handleException(HttpServletResponse response, String errorMessage) throws IOException {
         ResponseError error = ResponseError.builder()
-                .status("error")
                 .message(errorMessage)
                 .build();
 

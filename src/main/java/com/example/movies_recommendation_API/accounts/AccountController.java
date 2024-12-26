@@ -61,12 +61,12 @@ public class AccountController {
             // Tạo JWT token
             String token = jwtService.generateToken(account);
 
-            LoginResponseSuccess res = new LoginResponseSuccess("success");
+            LoginResponseSuccess res = new LoginResponseSuccess();
             res.setUsername(account.getUsername());
             res.setToken(token);
             return ResponseEntity.ok().body(res);
         } catch (AuthenticationException e) {
-            ResponseError error = new ResponseError("error", e.getMessage());
+            ResponseError error = new ResponseError(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
 
         }
@@ -78,7 +78,7 @@ public class AccountController {
             // Lấy tokenId từ request
             String tokenId = body.get("googleTokenId");
             if (tokenId == null || tokenId.isEmpty()) {
-                ResponseError error = new ResponseError("error", "Không nhận được token id.");
+                ResponseError error = new ResponseError("Không nhận được token id.");
                 return ResponseEntity.badRequest().body(error);
             }
 
@@ -86,7 +86,7 @@ public class AccountController {
             return googleAuthService.authenticateGoogleToken(tokenId);
 
         } catch (Exception e) {
-            ResponseError error = new ResponseError("error", e.getMessage());
+            ResponseError error = new ResponseError(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
@@ -97,12 +97,12 @@ public class AccountController {
         try {
             // Lấy thông tin từ SecurityContext
             Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            ResponseSuccess res = new ResponseSuccess("success", account);
+            ResponseSuccess res = new ResponseSuccess(account);
 
             // Trả về thông tin người dùng
             return ResponseEntity.ok().body(res);
         } catch (Exception e) {
-            ResponseError error = new ResponseError("error", e.getMessage());
+            ResponseError error = new ResponseError(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
 

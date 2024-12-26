@@ -14,7 +14,6 @@ public class ErrorController  {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
         ResponseError error = new ResponseError();
-        error.setStatus("error");
         error.setMessage(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -22,7 +21,6 @@ public class ErrorController  {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
         ResponseError error = new ResponseError();
-        error.setStatus("error");
         error.setMessage("Tài nguyên yêu cầu không có trên máy chủ.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
@@ -34,7 +32,6 @@ public class ErrorController  {
                 errorMessages.append(error.getDefaultMessage()).append(" ")
         );
         ResponseError error = new ResponseError();
-        error.setStatus("error");
         error.setMessage(errorMessages.toString().substring(0, errorMessages.toString().length() - 1));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
@@ -42,7 +39,6 @@ public class ErrorController  {
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<?> handleMessagingException(MessagingException e) {
         ResponseError error = new ResponseError();
-        error.setStatus("error");
         error.setMessage("Lỗi không gửi được OTP.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }

@@ -48,7 +48,7 @@ public class GoogleAuthService {
         // Xác minh tokenId
         GoogleIdToken verifyIdToken = verifier.verify(tokenId);
         if (verifyIdToken == null) {
-            ResponseError error = new ResponseError("error", "Id token không hợp lệ.");
+            ResponseError error = new ResponseError("Id token không hợp lệ.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
 
@@ -73,7 +73,7 @@ public class GoogleAuthService {
         }
 
         String token = jwtService.generateToken(account);
-        LoginResponseSuccess res = new LoginResponseSuccess("success");
+        LoginResponseSuccess res = new LoginResponseSuccess();
         res.setToken(token);
         res.setUsername(account.getUsername());
         return ResponseEntity.ok().body(res);

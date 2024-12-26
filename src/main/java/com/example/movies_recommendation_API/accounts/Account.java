@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Account {
 
     @Id
-    private String id; // ID kiểu String, tự động sinh bởi MongoDB
+    private String _id; // ID kiểu String, tự động sinh bởi MongoDB
 
     @Field("username")
     private String username; // Không cần @Column, MongoDB không yêu cầu

@@ -36,6 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/account/google").permitAll()
                         .requestMatchers(POST, "/account/send-otp").permitAll()
                         .requestMatchers(POST, "/account/reset-password").permitAll()
+                        .requestMatchers(POST, "/movie/filter").permitAll()
+                        .requestMatchers(GET, "/movie/search").permitAll()
                         .requestMatchers( "/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )

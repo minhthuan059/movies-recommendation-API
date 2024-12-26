@@ -58,14 +58,14 @@ public class AccountService {
     public ResponseEntity<?> createAccount(AccountCreateDTO accountCreateDTO) {
         try {
             if (accountRepository.findOneByUsernameAndGoogleIdIsEmpty(accountCreateDTO.getUsername()) != null) {
-                ResponseError error = new ResponseError("error", "Username đã tồn tại.");
+                ResponseError error = new ResponseError("Username đã tồn tại.");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
             }
             else {
                 // Lọc trường hợp email đã có tài khoản thường.
                 if (accountCreateDTO.getEmail() != null &&
                     accountRepository.findOneByEmailAndGoogleIdIsEmpty(accountCreateDTO.getEmail()) != null){
-                    ResponseError error = new ResponseError("error", "Email đã được dùng đăng ký tài khoản thường.");
+                    ResponseError error = new ResponseError("Email đã được dùng đăng ký tài khoản thường.");
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
                 }
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -78,11 +78,11 @@ public class AccountService {
                         .build();
                 // Gọi repository để lưu vào database
                 accountRepository.save(account);
-                ResponseSuccess res = new ResponseSuccess("success");
+                ResponseSuccess res = new ResponseSuccess();
                 return ResponseEntity.status(HttpStatus.CREATED).body(res);
             }
         } catch (Exception e) {
-            ResponseError error = new ResponseError("error", "Có lỗi trong quá trình tạo tài khoản.");
+            ResponseError error = new ResponseError("Có lỗi trong quá trình tạo tài khoản.");
             return ResponseEntity.badRequest().body(error);
         }
 
@@ -92,7 +92,7 @@ public class AccountService {
 
         Account account = accountRepository.findOneByEmailAndGoogleIdIsEmpty(email);
         if (account == null) {
-            ResponseError error = new ResponseError("error", "Email chưa đăng ký tài khoản thường.");
+            ResponseError error = new ResponseError("Email chưa đăng ký tài khoản thường.");
             return ResponseEntity.badRequest().body(error);
         }
 
@@ -107,27 +107,26 @@ public class AccountService {
         String emailContent = "<p>Mã OTP của bạn là:</p><h1>" + otp + "</h1>" +
                 "<p>OTP có hiệu lực trong 5 phút.</p>";
         emailService.sendEmail(email, "OTP xác thực", emailContent);
-        ResponseSuccess res = new ResponseSuccess("success");
+        ResponseSuccess res = new ResponseSuccess();
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
     public ResponseEntity<?> validateOtpAndResetPassword (String email, String otp, String newPassword) {
         OTP otpData = otpStore.get(email);
-        System.out.println(otpStore.toString());
 
         if (otpData == null) {
             return ResponseEntity.badRequest().body(
-                    new ResponseError("error", "OTP không tồn tại."));
+                    new ResponseError("OTP không tồn tại."));
         }
 
         if (!otpData.getOtp().equals(otp)) {
             return ResponseEntity.badRequest().body(
-                    new ResponseError("error", "OTP không chính xác."));
+                    new ResponseError("OTP không chính xác."));
         }
 
         if (otpData.getExpiryDate().isBefore(LocalDateTime.now())) {
             otpStore.remove(email);
             return ResponseEntity.badRequest().body(
-                    new ResponseError("error", "OTP đã hết hạn."));
+                    new ResponseError("OTP đã hết hạn."));
         }
 
         Account account = accountRepository.findOneByEmailAndGoogleIdIsEmpty(email);
@@ -143,7 +142,7 @@ public class AccountService {
         otpStore.remove(email);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                new ResponseSuccess("success")
+                new ResponseSuccess()
         );
     }
 
