@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -35,27 +36,58 @@ public class FilterService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         if (!Objects.equals(trendingCollection, "")) {
+            // Xây dựng điều kiện chung
+            Criteria criteria = new Criteria().andOperator(
+                    Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage),
+                    Criteria.where("release_date").gte(startDate).lte(endDate)
+            );
+
+            // Nếu genres không phải là danh sách rỗng, thêm điều kiện genres vào criteria
+            if (genres != null && !genres.isEmpty()) {
+                criteria.and("genres.name").all(genres);
+            }
+
+            // Tạo aggregation để lọc theo các điều kiện và kết nối với trendingCollection
             Aggregation aggregation = Aggregation.newAggregation(
-                    Aggregation.match(Criteria.where("genres.name").all(genres)), // Lọc theo genres
-                    Aggregation.match(Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage)), // Lọc theo vote_average
-                    Aggregation.match(Criteria.where("release_date").gte(startDate).lte(endDate)), // Lọc theo release_date
-                    Aggregation.lookup(trendingCollection, "id", "id", "movies"), // Join với movie_trending_day
-                    Aggregation.unwind("movies"), // Làm phẳng kết quả sau join
-                    Aggregation.match(Criteria.where("movies.id").exists(true)) // Kiểm tra phim có trong trending
+                    // Kết hợp các điều kiện vào một match duy nhất
+                    Aggregation.match(criteria),
+
+                    // Kết nối với collection movie_trending_day
+                    Aggregation.lookup(trendingCollection, "id", "id", "trending_movies"),
+
+                    // Lọc chỉ những phim có mặt trong trending
+                    Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
+
+                    // Chỉ lấy các bản ghi trong phạm vi phân trang
+                    Aggregation.skip((long) pageable.getOffset()),  // Bỏ qua các phần tử của các trang trước
+                    Aggregation.limit(pageable.getPageSize())      // Giới hạn số lượng phần tử của trang hiện tại
             );
 
-            // Bước 2: Thực hiện aggregation
-
-
+            // Thực hiện aggregation để lấy danh sách kết quả
             AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, "movies", Movie.class);
-            List<Movie> movieList = results.getMappedResults();
-            Integer totalElement = movieList.size();
 
-            return ResponseEntity.ok().body(
-                    new ResponseSuccess(new PageImpl<>(
-                            movieList.subList(pageNumber*pageSize, Math.min((pageNumber + 1) * pageSize, movieList.size())),
-                            pageable, totalElement))
+            // Tính tổng số phần tử (count)
+            Aggregation countAggregation = Aggregation.newAggregation(
+                    Aggregation.match(criteria),  // Sử dụng lại criteria đã có
+
+                    Aggregation.lookup(trendingCollection, "id", "id", "trending_movies"),
+
+                    Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
+
+                    // Đếm tổng số phần tử sau khi lọc và join
+                    Aggregation.count().as("total")
             );
+
+            // Thực hiện aggregation để lấy tổng số phần tử
+            AggregationResults<Map> countResults = mongoTemplate.aggregate(countAggregation, "movies", Map.class);
+            int totalElement = (countResults.getMappedResults().isEmpty()) ? 0 : (int) countResults.getMappedResults().get(0).get("total");
+
+            // Trả về kết quả dưới dạng phân trang
+            Page<Movie> page = new PageImpl<>(results.getMappedResults(), pageable, totalElement);
+
+            return ResponseEntity.ok().body(new ResponseSuccess(page));
+
+
         }
         else {
             Page<Movie> result = movieRepository.filterMovies(

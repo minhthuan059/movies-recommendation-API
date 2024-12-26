@@ -64,7 +64,7 @@ public class MovieController {
         }
         return filterService.filterMovies(
                 body.get("collection") != null ? body.get("collection").toString() : "",
-                body.get("genres") != null ? (List<String>) body.get("genres") : null,
+                body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
                 body.get("minVote") != null ? Double.parseDouble((String) body.get("minVote")) : 0,
                 body.get("maxVote") != null ? Double.parseDouble((String) body.get("maxVote")) : 10,
                 body.get("startDate") != null ? (String) body.get("startDate") : "1600-01-01",
