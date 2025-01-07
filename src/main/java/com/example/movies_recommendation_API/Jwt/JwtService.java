@@ -1,6 +1,6 @@
 package com.example.movies_recommendation_API.Jwt;
 
-import com.example.movies_recommendation_API.accounts.Account;
+import com.example.movies_recommendation_API.users.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
@@ -33,9 +33,9 @@ public class JwtService {
     }
 
     // Tạo token từ thông tin người dùngcd
-    public String generateToken(Account account) {
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, account.getUsername());
+        return createToken(claims, user.getUsername());
     }
 
     // Tạo token với thông tin tùy chỉnh
@@ -83,8 +83,8 @@ public class JwtService {
     }
 
     // Kiểm tra token hợp lệ
-    public boolean validateToken(String token, Account account) {
+    public boolean validateToken(String token, User user) {
         final String username = extractUsername(token);
-        return username.equals(account.getUsername()) && !isTokenExpired(token);
+        return username.equals(user.getUsername()) && !isTokenExpired(token);
     }
 }

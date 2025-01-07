@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.accounts;
+package com.example.movies_recommendation_API.users;
 
 import com.example.movies_recommendation_API.Jwt.JwtService;
 import com.example.movies_recommendation_API.oauth2.GoogleAuthService;
@@ -20,11 +20,11 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/account")
-public class AccountController {
+@RequestMapping("/user")
+public class UserController {
 
     @Autowired
-    private AccountService accountService;
+    private UserService userService;
 
     @Autowired
     private JwtService jwtService;
@@ -37,18 +37,18 @@ public class AccountController {
 
 
     @GetMapping("")
-    public ResponseEntity<?> getAccounts() {
-        return ResponseEntity.ok().body(accountService.getAllAccounts());
+    public ResponseEntity<?> getUsers() {
+        return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> postRegisterAccount(@Valid @RequestBody AccountCreateDTO account) {
-        return accountService.createAccount(account);
+    public ResponseEntity<?> postRegisterUser(@Valid @RequestBody UserCreateDTO user) {
+        return userService.createUser(user);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> postLogin(@RequestBody Account loginRequest) {
+    public ResponseEntity<?> postLogin(@RequestBody User loginRequest) {
         try {
             // Xác thực thông tin đăng nhập
             authenticationManager.authenticate(
@@ -56,13 +56,13 @@ public class AccountController {
             );
 
             // Tải thông tin người dùng
-            Account account = accountService.getAccountByUsername(loginRequest.getUsername());
+            User user = userService.getUserByUsername(loginRequest.getUsername());
 
             // Tạo JWT token
-            String token = jwtService.generateToken(account);
+            String token = jwtService.generateToken(user);
 
             LoginResponseSuccess res = new LoginResponseSuccess();
-            res.setUsername(account.getUsername());
+            res.setUsername(user.getUsername());
             res.setToken(token);
             return ResponseEntity.ok().body(res);
         } catch (AuthenticationException e) {
@@ -96,8 +96,8 @@ public class AccountController {
     public ResponseEntity<?> getProfile() {
         try {
             // Lấy thông tin từ SecurityContext
-            Account account = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            ResponseSuccess res = new ResponseSuccess(account);
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            ResponseSuccess res = new ResponseSuccess(user);
 
             // Trả về thông tin người dùng
             return ResponseEntity.ok().body(res);
@@ -111,12 +111,12 @@ public class AccountController {
     @PostMapping("/send-otp")
     public ResponseEntity<?> postRequestSendOTP (@RequestBody Map<String, String> body) throws MessagingException {
         String email = body.get("email");
-        return accountService.createAndSendOTP(email);
+        return userService.createAndSendOTP(email);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?>  postRequestChangePassword (@RequestBody Map<String, String> body) {
-        return accountService.validateOtpAndResetPassword(body.get("email"), body.get("otp"), body.get("password"));
+        return userService.validateOtpAndResetPassword(body.get("email"), body.get("otp"), body.get("password"));
     }
 
 

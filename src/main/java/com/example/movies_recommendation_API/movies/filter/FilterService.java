@@ -32,7 +32,8 @@ public class FilterService {
             String trendingCollection, List<String> genres,
             Double minVoteAverage, Double maxVoteAverage,
             String startDate, String endDate,
-            Integer pageNumber, Integer pageSize) {
+            Integer pageNumber, Integer pageSize
+    ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         if (!Objects.equals(trendingCollection, "")) {

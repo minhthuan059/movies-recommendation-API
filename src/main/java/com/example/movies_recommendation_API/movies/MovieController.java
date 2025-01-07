@@ -1,20 +1,13 @@
 package com.example.movies_recommendation_API.movies;
-import com.example.movies_recommendation_API.Jwt.JwtService;
+
 import com.example.movies_recommendation_API.movies.filter.FilterService;
+import com.example.movies_recommendation_API.movies.movies_popular.MoviesPopularService;
+import com.example.movies_recommendation_API.movies.movies_trending_day.MoviesTrendingDayService;
+import com.example.movies_recommendation_API.movies.movies_trending_week.MoviesTrendingWeekService;
 import com.example.movies_recommendation_API.movies.search.SearchService;
-import com.example.movies_recommendation_API.oauth2.GoogleAuthService;
-import com.example.movies_recommendation_API.response.LoginResponseSuccess;
-import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,9 +27,18 @@ public class MovieController {
     @Autowired
     private FilterService filterService;
 
-    @GetMapping("/tmdb_id")
-    public ResponseEntity<?> getByTmdbId(@RequestParam Map<String, String> param) {
-        return movieService.getMovieByTmdbId(param.get("tmdb_id"));
+    @Autowired
+    private MoviesTrendingDayService moviesTrendingDayService;
+
+    @Autowired
+    private MoviesTrendingWeekService moviesTrendingWeekService;
+
+    @Autowired
+    private MoviesPopularService moviesPopularService;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getByTmdbId(@PathVariable String id) {
+        return movieService.getMovieById(id);
     }
 
     @GetMapping("/search")
@@ -54,7 +56,7 @@ public class MovieController {
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<?> getFilterMovies(@RequestBody Map<String, Object> body) {
+    public ResponseEntity<?> postFilterMovies(@RequestBody Map<String, Object> body) {
         if (!body.containsKey("collection") && !body.containsKey("genres")
                 && !body.containsKey("minVote") && !body.containsKey("maxVote")
                 && !body.containsKey("startDate") && !body.containsKey("endDate")) {
@@ -71,6 +73,30 @@ public class MovieController {
                 body.get("endDate") != null ? (String) body.get("endDate") : "9999-12-31",
                 body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
                 body.get("size") != null ? Integer.parseInt(body.get("size").toString()) : 10
+        );
+    }
+
+    @GetMapping("/trending-day")
+    public ResponseEntity<?> getMoviesTrendingDay(@RequestParam Map<String, String> param) {
+        return moviesTrendingDayService.getAllMovies(
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
+        );
+    }
+
+    @GetMapping("/trending-week")
+    public ResponseEntity<?> getMoviesTrendingWeek(@RequestParam Map<String, String> param) {
+        return moviesTrendingWeekService.getAllMovies(
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
+        );
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<?> getMoviesPopular(@RequestParam Map<String, String> param) {
+        return moviesPopularService.getAllMovies(
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
         );
     }
 }

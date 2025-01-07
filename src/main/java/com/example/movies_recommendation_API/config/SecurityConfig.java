@@ -30,12 +30,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(GET, "/account").permitAll() // Các endpoint không cần xác thực
-                        .requestMatchers(POST, "/account/register").permitAll()
-                        .requestMatchers(POST, "/account/login").permitAll()
-                        .requestMatchers(POST, "/account/google").permitAll()
-                        .requestMatchers(POST, "/account/send-otp").permitAll()
-                        .requestMatchers(POST, "/account/reset-password").permitAll()
+                        .requestMatchers(GET, "/user").permitAll() // Các endpoint không cần xác thực
+                        .requestMatchers(POST, "/user/register").permitAll()
+                        .requestMatchers(POST, "/user/login").permitAll()
+                        .requestMatchers(POST, "/user/google").permitAll()
+                        .requestMatchers(POST, "/user/send-otp").permitAll()
+                        .requestMatchers(POST, "/user/reset-password").permitAll()
                         .requestMatchers(POST, "/movie/filter").permitAll()
                         .requestMatchers(GET, "/movie/search").permitAll()
                         .requestMatchers( "/login/oauth2/**").permitAll()

@@ -1,7 +1,7 @@
 package com.example.movies_recommendation_API.config;
 
-import com.example.movies_recommendation_API.accounts.Account;
-import com.example.movies_recommendation_API.accounts.AccountService;
+import com.example.movies_recommendation_API.users.User;
+import com.example.movies_recommendation_API.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,12 +16,12 @@ import java.util.ArrayList;
 @Component
 public class AuthenticationProviderConfig implements AuthenticationProvider {
 
-    private AccountService accountService;
+    private UserService userService;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthenticationProviderConfig(AccountService accountService, PasswordEncoder passwordEncoder) {
-        this.accountService = accountService;
+    public AuthenticationProviderConfig(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -30,19 +30,19 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
-        // Tìm Account từ database
-        Account account = accountService.getAccountByUsernameAndGoogleIdIsEmpty(username);
-        if (account == null) {
+        // Tìm User từ database
+        User user = userService.getUserByUsernameAndGoogleIdIsEmpty(username);
+        if (user == null) {
             throw new BadCredentialsException("Tài khoản không tồn tại.");
         }
 
         // Kiểm tra mật khẩu
-        if (!passwordEncoder.matches(password, account.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Mật khẩu không chính xác.");
         }
 
         // Tạo đối tượng Authentication thành công
-        return new UsernamePasswordAuthenticationToken(account, password, new ArrayList<>());
+        return new UsernamePasswordAuthenticationToken(user, password, new ArrayList<>());
     }
 
     @Override

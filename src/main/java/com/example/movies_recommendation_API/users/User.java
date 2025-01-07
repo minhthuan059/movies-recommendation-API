@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.accounts;
+package com.example.movies_recommendation_API.users;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,12 +10,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 
-@Document(collection = "accounts") // Tên collection trong MongoDB
+@Document(collection = "users") // Tên collection trong MongoDB
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account {
+public class User {
 
     @Id
     private String _id; // ID kiểu String, tự động sinh bởi MongoDB

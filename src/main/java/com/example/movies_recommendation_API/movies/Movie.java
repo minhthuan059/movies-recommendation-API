@@ -107,5 +107,12 @@ public class Movie {
 
     @Field("credits")
     private Map<String, Object> credits;
+
+    @Field("trailers")
+    private List<Map<String, Object>> trailers;
+
+    @Field("similar_movies")
+    private List<Map<String, Object>> similar_movies;
+
 }
 

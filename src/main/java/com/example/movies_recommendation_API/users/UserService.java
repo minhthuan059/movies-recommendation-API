@@ -1,15 +1,13 @@
-package com.example.movies_recommendation_API.accounts;
+package com.example.movies_recommendation_API.users;
 
 import com.example.movies_recommendation_API.email.EmailService;
 import com.example.movies_recommendation_API.email.OTP;
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,63 +19,62 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service
-public class AccountService {
+public class UserService {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private EmailService emailService;
 
     private final Map<String, OTP> otpStore = new ConcurrentHashMap<>();
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public void saveAccount(Account account) {
-        accountRepository.save(account);
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
-    public Account getAccountByUsername(String name) {
-        return accountRepository.findOneByUsername(name);
+    public User getUserByUsername(String name) {
+        return userRepository.findOneByUsername(name);
     }
 
-    public Account getAccountByUsernameAndGoogleId(String name, String googleId) {
-        return accountRepository.findOneByUsernameAndGoogleId(name, googleId);
+    public User getUserByUsernameAndGoogleId(String name, String googleId) {
+        return userRepository.findOneByUsernameAndGoogleId(name, googleId);
     }
 
-    public Account getAccountByUsernameAndGoogleIdIsEmpty(String name) {
-        return accountRepository.findOneByUsernameAndGoogleIdIsEmpty(name);
+    public User getUserByUsernameAndGoogleIdIsEmpty(String name) {
+        return userRepository.findOneByUsernameAndGoogleIdIsEmpty(name);
     }
 
-    public Account getAccountByGoogleId(String googleId) {
-        return accountRepository.findOneByGoogleId(googleId);
+    public User getUserByGoogleId(String googleId) {
+        return userRepository.findOneByGoogleId(googleId);
     }
 
-    public ResponseEntity<?> createAccount(AccountCreateDTO accountCreateDTO) {
+    public ResponseEntity<?> createUser(UserCreateDTO userCreateDTO) {
         try {
-            if (accountRepository.findOneByUsernameAndGoogleIdIsEmpty(accountCreateDTO.getUsername()) != null) {
+            if (userRepository.findOneByUsernameAndGoogleIdIsEmpty(userCreateDTO.getUsername()) != null) {
                 ResponseError error = new ResponseError("Username đã tồn tại.");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
-            }
-            else {
+            } else {
                 // Lọc trường hợp email đã có tài khoản thường.
-                if (accountCreateDTO.getEmail() != null &&
-                    accountRepository.findOneByEmailAndGoogleIdIsEmpty(accountCreateDTO.getEmail()) != null){
+                if (userCreateDTO.getEmail() != null &&
+                        userRepository.findOneByEmailAndGoogleIdIsEmpty(userCreateDTO.getEmail()) != null) {
                     ResponseError error = new ResponseError("Email đã được dùng đăng ký tài khoản thường.");
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
                 }
                 BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                String encodedPassword = encoder.encode(accountCreateDTO.getPassword());
-                Account account = Account.builder()
-                        .username(accountCreateDTO.getUsername())
+                String encodedPassword = encoder.encode(userCreateDTO.getPassword());
+                User user = User.builder()
+                        .username(userCreateDTO.getUsername())
                         .password(encodedPassword)
-                        .email(accountCreateDTO.getEmail())
+                        .email(userCreateDTO.getEmail())
                         .createdAt(LocalDateTime.now())
                         .build();
                 // Gọi repository để lưu vào database
-                accountRepository.save(account);
+                userRepository.save(user);
                 ResponseSuccess res = new ResponseSuccess();
                 return ResponseEntity.status(HttpStatus.CREATED).body(res);
             }
@@ -88,10 +85,10 @@ public class AccountService {
 
     }
 
-    public ResponseEntity<?> createAndSendOTP (String email) throws MessagingException {
+    public ResponseEntity<?> createAndSendOTP(String email) throws MessagingException {
 
-        Account account = accountRepository.findOneByEmailAndGoogleIdIsEmpty(email);
-        if (account == null) {
+        User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
+        if (user == null) {
             ResponseError error = new ResponseError("Email chưa đăng ký tài khoản thường.");
             return ResponseEntity.badRequest().body(error);
         }
@@ -110,7 +107,8 @@ public class AccountService {
         ResponseSuccess res = new ResponseSuccess();
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
-    public ResponseEntity<?> validateOtpAndResetPassword (String email, String otp, String newPassword) {
+
+    public ResponseEntity<?> validateOtpAndResetPassword(String email, String otp, String newPassword) {
         OTP otpData = otpStore.get(email);
 
         if (otpData == null) {
@@ -129,14 +127,14 @@ public class AccountService {
                     new ResponseError("OTP đã hết hạn."));
         }
 
-        Account account = accountRepository.findOneByEmailAndGoogleIdIsEmpty(email);
+        User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(newPassword);
-        account.setPassword(encodedPassword);
+        user.setPassword(encodedPassword);
 
         // Lưu lại người dùng đã thay đổi mật khẩu (không tạo tài khoản mới)
-        accountRepository.save(account);
+        userRepository.save(user);
 
         // Xóa OTP sau khi sử dụng
         otpStore.remove(email);

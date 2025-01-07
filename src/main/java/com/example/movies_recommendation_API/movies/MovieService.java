@@ -19,8 +19,8 @@ public class MovieService {
         );
     }
 
-    public ResponseEntity<?> getMovieByTmdbId(String id){
-        Movie movie = movieRepository.findOneByTmdb_id(Integer.parseInt(id));
+    public ResponseEntity<?> getMovieById(String id){
+        Movie movie = movieRepository.findOneById(Integer.parseInt(id));
         if (movie == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseError("Không tìm thấy phim có id yêu cầu")
@@ -30,5 +30,6 @@ public class MovieService {
                 new ResponseSuccess(movie)
         );
     }
+
 
 }

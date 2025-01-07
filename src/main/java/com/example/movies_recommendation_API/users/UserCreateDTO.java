@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.accounts;
+package com.example.movies_recommendation_API.users;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AccountCreateDTO {
+public class UserCreateDTO {
 
     @NotEmpty(message = "Tên người dùng không được để trống.")
     @Size(min = 4, max = 50, message = "Tên người dùng phải có độ dài từ 4 đến 50 ký tự.")

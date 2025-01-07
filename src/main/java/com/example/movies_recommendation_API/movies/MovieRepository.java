@@ -11,8 +11,8 @@ import java.util.List;
 @Repository
 public interface MovieRepository  extends MongoRepository<Movie, Long> {
 
-    @Query("{ 'tmdb_id': ?0 }")
-    Movie findOneByTmdb_id(@Param("tmdb_id") int tmdb_id);
+    @Query("{ 'id': ?0 }")
+    Movie findOneById(@Param("tmdb_id") int tmdb_id);
 
     List<Movie> findListByTitleContainingIgnoreCase(String keyword);
 
