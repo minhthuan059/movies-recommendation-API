@@ -29,32 +29,39 @@ public class FilterService {
     private MovieRepository movieRepository;
 
     public ResponseEntity<?> filterMovies(
-            String trendingCollection, List<String> genres,
+            String collectionName, List<String> genres,
             Double minVoteAverage, Double maxVoteAverage,
             String startDate, String endDate,
             Integer pageNumber, Integer pageSize
     ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        if (!Objects.equals(trendingCollection, "")) {
+        if (!Objects.equals(collectionName, "")) {
             // Xây dựng điều kiện chung
             Criteria criteria = new Criteria().andOperator(
-                    Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage),
-                    Criteria.where("release_date").gte(startDate).lte(endDate)
+                    Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage)
             );
+
+            if (!startDate.isEmpty() && !endDate.isEmpty()) {
+                criteria.and("release_day").gte(startDate).lte(endDate);
+            } else if (!startDate.isEmpty()) {
+                criteria.and("release_day").gte(startDate);
+            } else if (!endDate.isEmpty()) {
+                criteria.and("release_day").lte(endDate);
+            }
 
             // Nếu genres không phải là danh sách rỗng, thêm điều kiện genres vào criteria
             if (genres != null && !genres.isEmpty()) {
-                criteria.and("genres.name").all(genres);
+                criteria.and("genres.id").all(genres);
             }
 
-            // Tạo aggregation để lọc theo các điều kiện và kết nối với trendingCollection
+            // Tạo aggregation để lọc theo các điều kiện và kết nối với collectionName
             Aggregation aggregation = Aggregation.newAggregation(
                     // Kết hợp các điều kiện vào một match duy nhất
                     Aggregation.match(criteria),
 
                     // Kết nối với collection movie_trending_day
-                    Aggregation.lookup(trendingCollection, "id", "id", "trending_movies"),
+                    Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
 
                     // Lọc chỉ những phim có mặt trong trending
                     Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
@@ -71,7 +78,7 @@ public class FilterService {
             Aggregation countAggregation = Aggregation.newAggregation(
                     Aggregation.match(criteria),  // Sử dụng lại criteria đã có
 
-                    Aggregation.lookup(trendingCollection, "id", "id", "trending_movies"),
+                    Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
 
                     Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
 

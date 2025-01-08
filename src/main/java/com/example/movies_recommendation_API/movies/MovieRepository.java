@@ -12,7 +12,7 @@ import java.util.List;
 public interface MovieRepository  extends MongoRepository<Movie, Long> {
 
     @Query("{ 'id': ?0 }")
-    Movie findOneById(@Param("tmdb_id") int tmdb_id);
+    Movie findOneById(@Param("id") int id);
 
     List<Movie> findListByTitleContainingIgnoreCase(String keyword);
 

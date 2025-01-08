@@ -72,6 +72,8 @@ public class UserService {
                         .password(encodedPassword)
                         .email(userCreateDTO.getEmail())
                         .createdAt(LocalDateTime.now())
+                        .updatedAt(LocalDateTime.now())
+                        .isActive(false)
                         .build();
                 // Gọi repository để lưu vào database
                 userRepository.save(user);
@@ -132,6 +134,42 @@ public class UserService {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(newPassword);
         user.setPassword(encodedPassword);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        // Lưu lại người dùng đã thay đổi mật khẩu (không tạo tài khoản mới)
+        userRepository.save(user);
+
+        // Xóa OTP sau khi sử dụng
+        otpStore.remove(email);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new ResponseSuccess()
+        );
+    }
+
+    public ResponseEntity<?> validateOtpAndActiveUser(String email, String otp) {
+        OTP otpData = otpStore.get(email);
+
+        if (otpData == null) {
+            return ResponseEntity.badRequest().body(
+                    new ResponseError("OTP không tồn tại."));
+        }
+
+        if (!otpData.getOtp().equals(otp)) {
+            return ResponseEntity.badRequest().body(
+                    new ResponseError("OTP không chính xác."));
+        }
+
+        if (otpData.getExpiryDate().isBefore(LocalDateTime.now())) {
+            otpStore.remove(email);
+            return ResponseEntity.badRequest().body(
+                    new ResponseError("OTP đã hết hạn."));
+        }
+
+        User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
+
+        user.setActive(true);
+        user.setUpdatedAt(LocalDateTime.now());
 
         // Lưu lại người dùng đã thay đổi mật khẩu (không tạo tài khoản mới)
         userRepository.save(user);

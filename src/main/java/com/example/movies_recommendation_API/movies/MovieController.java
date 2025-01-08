@@ -4,6 +4,7 @@ import com.example.movies_recommendation_API.movies.filter.FilterService;
 import com.example.movies_recommendation_API.movies.movies_popular.MoviesPopularService;
 import com.example.movies_recommendation_API.movies.movies_trending_day.MoviesTrendingDayService;
 import com.example.movies_recommendation_API.movies.movies_trending_week.MoviesTrendingWeekService;
+import com.example.movies_recommendation_API.movies.movies_upcoming.MoviesUpcomingService;
 import com.example.movies_recommendation_API.movies.search.SearchService;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,11 @@ public class MovieController {
     @Autowired
     private MoviesPopularService moviesPopularService;
 
+    @Autowired
+    private MoviesUpcomingService moviesUpcomingService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> getByTmdbId(@PathVariable String id) {
+    public ResponseEntity<?> getById(@PathVariable String id) {
         return movieService.getMovieById(id);
     }
 
@@ -69,8 +73,8 @@ public class MovieController {
                 body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
                 body.get("minVote") != null ? Double.parseDouble((String) body.get("minVote")) : 0,
                 body.get("maxVote") != null ? Double.parseDouble((String) body.get("maxVote")) : 10,
-                body.get("startDate") != null ? (String) body.get("startDate") : "1600-01-01",
-                body.get("endDate") != null ? (String) body.get("endDate") : "9999-12-31",
+                body.get("startDate") != null ? (String) body.get("startDate") : "",
+                body.get("endDate") != null ? (String) body.get("endDate") : "",
                 body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
                 body.get("size") != null ? Integer.parseInt(body.get("size").toString()) : 10
         );
@@ -95,6 +99,23 @@ public class MovieController {
     @GetMapping("/popular")
     public ResponseEntity<?> getMoviesPopular(@RequestParam Map<String, String> param) {
         return moviesPopularService.getAllMovies(
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
+        );
+    }
+
+    @GetMapping("/upcoming")
+    public ResponseEntity<?> getMoviesUpcoming(@RequestParam Map<String, String> param) {
+        return moviesUpcomingService.getAllMovies(
+                param.get("ascending") != null && Boolean.parseBoolean(param.get("ascending")),
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
+        );
+    }
+
+    @GetMapping("/lastest-trailers")
+    public ResponseEntity<?> getMoviesLastestTrailers(@RequestParam Map<String, String> param) {
+        return movieService.getMoviesSortedByLatestTrailer(
                 param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
                 param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
         );

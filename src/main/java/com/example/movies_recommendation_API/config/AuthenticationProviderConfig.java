@@ -36,6 +36,10 @@ public class AuthenticationProviderConfig implements AuthenticationProvider {
             throw new BadCredentialsException("Tài khoản không tồn tại.");
         }
 
+        if(!user.isActive()) {
+            throw new BadCredentialsException("Tài khoản chưa được xác thực.");
+        }
+
         // Kiểm tra mật khẩu
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Mật khẩu không chính xác.");

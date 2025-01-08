@@ -12,7 +12,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -26,7 +33,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         //http.authorizeRequests(auth -> auth.anyRequest().permitAll());
-        http
+        http.
+                addFilterBefore(corsFilter(), ChannelProcessingFilter.class)
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
 
@@ -35,9 +43,10 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/user/login").permitAll()
                         .requestMatchers(POST, "/user/google").permitAll()
                         .requestMatchers(POST, "/user/send-otp").permitAll()
+                        .requestMatchers(POST, "/user/active-account").permitAll()
                         .requestMatchers(POST, "/user/reset-password").permitAll()
-                        .requestMatchers(POST, "/movie/filter").permitAll()
-                        .requestMatchers(GET, "/movie/search").permitAll()
+                        .requestMatchers(POST, "/movie/*").permitAll()
+                        .requestMatchers(GET, "/movie/*").permitAll()
                         .requestMatchers( "/login/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -55,6 +64,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        return new CorsFilter(corsConfigurationSource());
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

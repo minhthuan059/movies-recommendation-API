@@ -114,5 +114,10 @@ public class Movie {
     @Field("similar_movies")
     private List<Map<String, Object>> similar_movies;
 
+    @Field("keywords")
+    private List<Map<String, Object>> keywords;
+
+    @Field("reviews")
+    private List<Map<String, Object>> reviews;
 }
 

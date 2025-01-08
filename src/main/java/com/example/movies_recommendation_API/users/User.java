@@ -1,11 +1,8 @@
 package com.example.movies_recommendation_API.users;
 
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
@@ -32,6 +29,13 @@ public class User {
     @Field("googleId")
     private String googleId;
 
-    @Field("createAt")
+    @Field("createdAt")
     private LocalDateTime createdAt; // Dữ liệu dạng thời gian
+
+    @Field("updatedAt")
+    private LocalDateTime updatedAt;
+
+    @Field("isActive")
+    private boolean isActive;
+
 }

@@ -67,6 +67,8 @@ public class GoogleAuthService {
                     .username(name)
                     .password("") // Không cần mật khẩu cho tài khoản Google
                     .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .isActive(true)
                     .build();
             userService.saveUser(user);
 

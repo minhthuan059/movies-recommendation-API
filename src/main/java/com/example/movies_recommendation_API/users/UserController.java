@@ -54,7 +54,6 @@ public class UserController {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
-
             // Tải thông tin người dùng
             User user = userService.getUserByUsername(loginRequest.getUsername());
 
@@ -117,6 +116,11 @@ public class UserController {
     @PostMapping("/reset-password")
     public ResponseEntity<?>  postRequestChangePassword (@RequestBody Map<String, String> body) {
         return userService.validateOtpAndResetPassword(body.get("email"), body.get("otp"), body.get("password"));
+    }
+
+    @PostMapping("/active-account")
+    public ResponseEntity<?>  postRequestActiveUser (@RequestBody Map<String, String> body) {
+        return userService.validateOtpAndActiveUser(body.get("email"), body.get("otp"));
     }
 
 
