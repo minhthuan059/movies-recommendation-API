@@ -14,6 +14,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2Clien
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.google.api.client.json.gson.GsonFactory;
+
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -30,7 +32,6 @@ public class GoogleAuthService {
     // Khóa Client ID từ Google Console
     private final String CLIENT_ID;
 
-    @Autowired
     public GoogleAuthService(OAuth2ClientProperties oAuth2ClientProperties) {
         this.CLIENT_ID = oAuth2ClientProperties.getRegistration()
                 .get("google")
@@ -41,19 +42,21 @@ public class GoogleAuthService {
         // Tạo GoogleIdTokenVerifier để xác minh tokenId
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance()
-        ).setAudience(Collections.singletonList(CLIENT_ID)).build();
+                GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(CLIENT_ID))
+                .build();
 
+        GoogleIdToken idToken = verifier.verify(tokenId);
 
-        // Xác minh tokenId
-        GoogleIdToken verifyIdToken = verifier.verify(tokenId);
-        if (verifyIdToken == null) {
+        if (idToken == null) {
             ResponseError error = new ResponseError("Id token không hợp lệ.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
 
         // Lấy thông tin tài khoản Google
-        GoogleIdToken.Payload payload = verifyIdToken.getPayload();
+
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        System.out.println("Payload: " + payload.toPrettyString());
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");

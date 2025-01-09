@@ -71,25 +71,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/google")
-    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
-        try {
-            // Lấy tokenId từ request
-            String tokenId = body.get("googleTokenId");
-            if (tokenId == null || tokenId.isEmpty()) {
-                ResponseError error = new ResponseError("Không nhận được token id.");
-                return ResponseEntity.badRequest().body(error);
-            }
-
-            // Xác thực Google tokenId và tạo JWT
-            return googleAuthService.authenticateGoogleToken(tokenId);
-
-        } catch (Exception e) {
-            ResponseError error = new ResponseError(e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        }
-    }
-
 
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {

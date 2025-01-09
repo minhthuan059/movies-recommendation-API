@@ -41,7 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/user").permitAll() // Các endpoint không cần xác thực
                         .requestMatchers(POST, "/user/register").permitAll()
                         .requestMatchers(POST, "/user/login").permitAll()
-                        .requestMatchers(POST, "/user/google").permitAll()
+                        .requestMatchers(POST, "/google").permitAll()
                         .requestMatchers(POST, "/user/send-otp").permitAll()
                         .requestMatchers(POST, "/user/active-account").permitAll()
                         .requestMatchers(POST, "/user/reset-password").permitAll()
