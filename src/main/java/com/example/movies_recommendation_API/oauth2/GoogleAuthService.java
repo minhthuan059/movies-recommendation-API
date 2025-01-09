@@ -56,7 +56,7 @@ public class GoogleAuthService {
         // Lấy thông tin tài khoản Google
 
         GoogleIdToken.Payload payload = idToken.getPayload();
-        System.out.println("Payload: " + payload.toPrettyString());
+
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");

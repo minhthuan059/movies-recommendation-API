@@ -12,7 +12,10 @@ import java.util.List;
 public interface MovieRepository  extends MongoRepository<Movie, Long> {
 
     @Query("{ 'id': ?0 }")
-    Movie findOneById(@Param("id") int id);
+    Movie findOneById(@Param("id") Integer id);
+
+    @Query("{ 'id': { $in: ?0 } }")
+    Page<Movie> findByCustomIdIn(List<Integer> ids, Pageable pageable);
 
     List<Movie> findListByTitleContainingIgnoreCase(String keyword);
 

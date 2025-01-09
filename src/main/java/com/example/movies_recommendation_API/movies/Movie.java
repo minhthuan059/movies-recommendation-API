@@ -73,7 +73,7 @@ public class Movie {
     private List<Map<String, Object>> production_companies;
 
     @Field("production_countries")
-    private List<String> production_countries;
+    private List<Map<String, Object>> production_countries;
 
     @Field("release_date")
     private String release_date;
