@@ -43,11 +43,11 @@ public class FilterService {
             );
 
             if (!startDate.isEmpty() && !endDate.isEmpty()) {
-                criteria.and("release_day").gte(startDate).lte(endDate);
+                criteria.and("release_date").gte(startDate).lte(endDate);
             } else if (!startDate.isEmpty()) {
-                criteria.and("release_day").gte(startDate);
+                criteria.and("release_date").gte(startDate);
             } else if (!endDate.isEmpty()) {
-                criteria.and("release_day").lte(endDate);
+                criteria.and("release_date").lte(endDate);
             }
 
             // Nếu genres không phải là danh sách rỗng, thêm điều kiện genres vào criteria

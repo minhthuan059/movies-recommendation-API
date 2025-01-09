@@ -71,8 +71,8 @@ public class MovieController {
         return filterService.filterMovies(
                 body.get("collection") != null ? body.get("collection").toString() : "",
                 body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
-                body.get("minVote") != null ? Double.parseDouble((String) body.get("minVote")) : 0,
-                body.get("maxVote") != null ? Double.parseDouble((String) body.get("maxVote")) : 10,
+                body.get("minVote") != null ? Double.parseDouble( body.get("minVote").toString()) : 0,
+                body.get("maxVote") != null ? Double.parseDouble( body.get("maxVote").toString()) : 10,
                 body.get("startDate") != null ? (String) body.get("startDate") : "",
                 body.get("endDate") != null ? (String) body.get("endDate") : "",
                 body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
