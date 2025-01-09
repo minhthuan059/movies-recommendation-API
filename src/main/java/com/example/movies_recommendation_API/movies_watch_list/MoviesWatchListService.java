@@ -42,7 +42,7 @@ public class MoviesWatchListService {
         );
     }
 
-    public ResponseEntity<?> AddMovieToWatchList(Integer movieId) {
+    public ResponseEntity<?> addMovieToWatchList(Integer movieId) {
         Movie movie = moviesRepository.findOneById(movieId);
         if (movie == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -57,12 +57,67 @@ public class MoviesWatchListService {
                     .movieIds(List.of(movie.getId()))
                     .build();
         } else {
-            moviesWatchList.getMovieIds().add(movie.getId());
+            if (!moviesWatchList.getMovieIds().contains(movie.getId())) {
+                moviesWatchList.getMovieIds().add(movie.getId());
+                moviesWatchListRepository.save(moviesWatchList);
+                return ResponseEntity.ok().body(
+                        new ResponseSuccess()
+                );
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseError("Movie đã tồn tại trong danh sách xem.")
+                );
+            }
         }
-        moviesWatchListRepository.save(moviesWatchList);
-        return ResponseEntity.ok().body(
-                new ResponseSuccess()
-        );
+        return null;
+    }
 
+    public ResponseEntity<?> deleteMovieToWatchList(Integer movieId) {
+        Movie movie = moviesRepository.findOneById(movieId);
+        if (movie == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponseError("Movie không tồn tại.")
+            );
+        }
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MoviesWatchList moviesWatchList = moviesWatchListRepository.findByUserId(user.get_id());
+        if (moviesWatchList == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Danh sách xem trống.")
+            );
+        } else {
+            if (moviesWatchList.getMovieIds().contains(movie.getId())) {
+                moviesWatchList.getMovieIds().remove(movie.getId());
+                if (moviesWatchList.getMovieIds().isEmpty()) {
+                    moviesWatchListRepository.delete(moviesWatchList);
+                } else {
+                    moviesWatchListRepository.save(moviesWatchList);
+                }
+                return ResponseEntity.ok().body(
+                        new ResponseSuccess()
+                );
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseError("Movie không tồn tại trong danh sách xem.")
+                );
+            }
+
+        }
+    }
+
+    public ResponseEntity<?> deleteAllMovieToWatchList() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MoviesWatchList moviesWatchList = moviesWatchListRepository.findByUserId(user.get_id());
+        if (moviesWatchList == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Danh sách xem trống.")
+            );
+        } else {
+            moviesWatchListRepository.deleteAll();
+            return ResponseEntity.ok().body(
+                    new ResponseSuccess()
+            );
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.movies_recommendation_API.movies_watch_list;
 
 import com.example.movies_recommendation_API.response.ResponseError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.repository.DeleteQuery;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +33,28 @@ public class MoviesWatchListController {
                     new ResponseError("Không nhận được id phim.")
             );
         } else {
-            return moviesWatchListService.AddMovieToWatchList(
+            return moviesWatchListService.addMovieToWatchList(
                     Integer.parseInt(body.get("movieId").toString())
             );
         }
+    }
+
+    @DeleteMapping("/{movieId}")
+    public ResponseEntity<?> deleteMovieInMoviesWatchList(@PathVariable String movieId){
+        if (movieId == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được id phim.")
+            );
+        } else {
+            return moviesWatchListService.deleteMovieToWatchList(
+                    Integer.parseInt(movieId)
+            );
+        }
+    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<?> deleteAllMovieInMoviesWatchList(){
+        return moviesWatchListService.deleteAllMovieToWatchList();
     }
 
 }
