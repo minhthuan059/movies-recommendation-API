@@ -1,6 +1,7 @@
 package com.example.movies_recommendation_API.movies;
 
 import com.example.movies_recommendation_API.movies.filter.FilterService;
+import com.example.movies_recommendation_API.movies.movie_genres.MovieGenresService;
 import com.example.movies_recommendation_API.movies.movies_popular.MoviesPopularService;
 import com.example.movies_recommendation_API.movies.movies_trending_day.MoviesTrendingDayService;
 import com.example.movies_recommendation_API.movies.movies_trending_week.MoviesTrendingWeekService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 @RestController
@@ -21,6 +23,9 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private MovieGenresService  movieGenresService;
 
     @Autowired
     private SearchService searchService;
@@ -39,6 +44,11 @@ public class MovieController {
 
     @Autowired
     private MoviesUpcomingService moviesUpcomingService;
+
+    @GetMapping("/genres")
+    public ResponseEntity<?> getAllGenres() {
+        return movieGenresService.getAllMovieGenres();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
@@ -62,15 +72,20 @@ public class MovieController {
     @PostMapping("/filter")
     public ResponseEntity<?> postFilterMovies(@RequestBody Map<String, Object> body) {
         if (!body.containsKey("collection") && !body.containsKey("genres")
+                && !body.containsKey("keywords")
                 && !body.containsKey("minVote") && !body.containsKey("maxVote")
-                && !body.containsKey("startDate") && !body.containsKey("endDate")) {
+                && !body.containsKey("startDate") && !body.containsKey("endDate")
+        ) {
             return ResponseEntity.ok().body(
                     new ResponseSuccess(movieService.getAllMovies()));
 
         }
+
         return filterService.filterMovies(
+                Objects.equals(body.get("type").toString(), "OR") ? "OR" : "AND",
                 body.get("collection") != null ? body.get("collection").toString() : "",
                 body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
+                body.get("keywords") != null ? (List<String>) body.get("keywords") : List.of(),
                 body.get("minVote") != null ? Double.parseDouble( body.get("minVote").toString()) : 0,
                 body.get("maxVote") != null ? Double.parseDouble( body.get("maxVote").toString()) : 10,
                 body.get("startDate") != null ? (String) body.get("startDate") : "",

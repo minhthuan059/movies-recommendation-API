@@ -21,8 +21,7 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 public class SecurityConfig {
@@ -43,8 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/user/login").permitAll()
                         .requestMatchers(POST, "/google").permitAll()
                         .requestMatchers(POST, "/user/send-otp").permitAll()
-                        .requestMatchers(POST, "/user/active-account").permitAll()
-                        .requestMatchers(POST, "/user/reset-password").permitAll()
+                        .requestMatchers(PATCH, "/user/active-account").permitAll()
+                        .requestMatchers(PATCH, "/user/reset-password").permitAll()
                         .requestMatchers(POST, "/movie/*").permitAll()
                         .requestMatchers(GET, "/movie/*").permitAll()
                         .requestMatchers( "/login/oauth2/**").permitAll()

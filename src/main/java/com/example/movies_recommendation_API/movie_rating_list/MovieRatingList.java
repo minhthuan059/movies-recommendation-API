@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.movies_favorite_list;
+package com.example.movies_recommendation_API.movie_rating_list;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,19 +9,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
+import java.util.Map;
 
-@Document(collection = "movies_favorite_list") // Tên collection trong MongoDB
+@Document(collection = "movie_rating_list") // Tên collection trong MongoDB
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MoviesFavoriteList {
+public class MovieRatingList {
     @Id
     private String _id;
 
     @Field("userId")
     private String userId;
 
-    @Field("movieIds")
-    private List<Integer> movieIds;
+    @Field("rating")
+    private List<Map<String, Object>> ratingList;
 }

@@ -29,7 +29,8 @@ public class FilterService {
     private MovieRepository movieRepository;
 
     public ResponseEntity<?> filterMovies(
-            String collectionName, List<String> genres,
+            String type, String collectionName,
+            List<String> genres, List<String> keywords,
             Double minVoteAverage, Double maxVoteAverage,
             String startDate, String endDate,
             Integer pageNumber, Integer pageSize
@@ -42,6 +43,23 @@ public class FilterService {
                     Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage)
             );
 
+            if (Objects.equals(type, "AND")) {
+                if (genres != null && !genres.isEmpty()) {
+                    criteria.and("genres.id").all(genres);
+                }
+                if (keywords != null && !keywords.isEmpty()) {
+                    criteria.and("keywords.name").all(keywords);
+                }
+            } else {
+                if (genres != null && !genres.isEmpty()) {
+                    criteria.and("genres.id").in(genres);
+                }
+
+                if (keywords != null && !keywords.isEmpty()) {
+                    criteria.and("keywords.name").in(keywords);
+                }
+            }
+
             if (!startDate.isEmpty() && !endDate.isEmpty()) {
                 criteria.and("release_date").gte(startDate).lte(endDate);
             } else if (!startDate.isEmpty()) {
@@ -50,10 +68,6 @@ public class FilterService {
                 criteria.and("release_date").lte(endDate);
             }
 
-            // Nếu genres không phải là danh sách rỗng, thêm điều kiện genres vào criteria
-            if (genres != null && !genres.isEmpty()) {
-                criteria.and("genres.id").all(genres);
-            }
 
             // Tạo aggregation để lọc theo các điều kiện và kết nối với collectionName
             Aggregation aggregation = Aggregation.newAggregation(

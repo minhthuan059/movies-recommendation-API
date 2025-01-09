@@ -94,15 +94,43 @@ public class UserController {
         return userService.createAndSendOTP(email);
     }
 
-    @PostMapping("/reset-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<?>  postRequestChangePassword (@RequestBody Map<String, String> body) {
+        if (body.get("email") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được email.")
+            );
+        }
+        if (body.get("password") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được password.")
+            );
+        }
+        if (body.get("otp") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được OTP.")
+            );
+        }
         return userService.validateOtpAndResetPassword(body.get("email"), body.get("otp"), body.get("password"));
     }
 
-    @PostMapping("/active-account")
+    @PatchMapping("/active-account")
     public ResponseEntity<?>  postRequestActiveUser (@RequestBody Map<String, String> body) {
-        return userService.validateOtpAndActiveUser(body.get("email"), body.get("otp"));
+        if (body.get("email") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được email.")
+            );
+        }
+        if (body.get("password") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được password.")
+            );
+        }
+        if (body.get("otp") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được OTP.")
+            );
+        }
+        return userService.validateOtpAndActiveUser(body.get("email"), body.get("password"), body.get("otp"));
     }
-
-
 }

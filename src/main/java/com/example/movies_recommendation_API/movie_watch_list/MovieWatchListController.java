@@ -1,4 +1,4 @@
-package com.example.movies_recommendation_API.movies_favorite_list;
+package com.example.movies_recommendation_API.movie_watch_list;
 
 
 import com.example.movies_recommendation_API.response.ResponseError;
@@ -10,28 +10,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("movie-favorite-list")
-public class MoviesFavoriteListController {
+@RequestMapping("movie-watch-list")
+public class MovieWatchListController {
 
     @Autowired
-    private MoviesFavoriteListService moviesFavoriteListService;
+    private MovieWatchListService movieWatchListService;
 
     @GetMapping("")
-    public ResponseEntity<?> getMoviesFavoriteList(@RequestParam Map<String, Object> param){
-        return moviesFavoriteListService.getMoviesByUserId(
+    public ResponseEntity<?> getMoviesWatchList(@RequestParam Map<String, Object> param){
+        return movieWatchListService.getMoviesByUserId(
                 param.get("page") != null ? Integer.parseInt(param.get("page").toString()) : 0,
                 param.get("size") != null ? Integer.parseInt(param.get("size").toString()) : 10
         );
     }
 
     @PostMapping("")
-    public ResponseEntity<?> postAddToMoviesFavoriteList(@RequestBody Map<String, Object> body){
+    public ResponseEntity<?> postAddToMoviesWatchList(@RequestBody Map<String, Object> body){
         if (body.get("movieId") == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseError("Không nhận được id phim.")
             );
         } else {
-            return moviesFavoriteListService.addMovieToFavoriteList(
+            return movieWatchListService.addMovieToWatchList(
                     Integer.parseInt(body.get("movieId").toString())
             );
         }
@@ -44,7 +44,7 @@ public class MoviesFavoriteListController {
                     new ResponseError("Không nhận được id phim.")
             );
         } else {
-            return moviesFavoriteListService.deleteMovieToFavoriteList(
+            return movieWatchListService.deleteMovieToWatchList(
                     Integer.parseInt(movieId)
             );
         }
@@ -52,7 +52,7 @@ public class MoviesFavoriteListController {
 
     @DeleteMapping("/all")
     public ResponseEntity<?> deleteAllMovieInMoviesWatchList(){
-        return moviesFavoriteListService.deleteAllMovieToFavoriteList();
+        return movieWatchListService.deleteAllMovieToWatchList();
     }
 
 }

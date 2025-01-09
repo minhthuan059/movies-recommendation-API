@@ -8,7 +8,9 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,13 @@ public class UserService {
     private EmailService emailService;
 
     private final Map<String, OTP> otpStore = new ConcurrentHashMap<>();
+
+
+//    private final PasswordEncoder passwordEncoder;
+//
+//    public UserService(PasswordEncoder passwordEncoder) {
+//        this.passwordEncoder = passwordEncoder;
+//    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -147,26 +156,39 @@ public class UserService {
         );
     }
 
-    public ResponseEntity<?> validateOtpAndActiveUser(String email, String otp) {
+    public ResponseEntity<?> validateOtpAndActiveUser(String email, String password, String otp) {
         OTP otpData = otpStore.get(email);
 
         if (otpData == null) {
             return ResponseEntity.badRequest().body(
-                    new ResponseError("OTP không tồn tại."));
+                    new ResponseError("OTP không tồn tại.")
+            );
         }
 
         if (!otpData.getOtp().equals(otp)) {
             return ResponseEntity.badRequest().body(
-                    new ResponseError("OTP không chính xác."));
+                    new ResponseError("OTP không chính xác.")
+            );
         }
 
         if (otpData.getExpiryDate().isBefore(LocalDateTime.now())) {
             otpStore.remove(email);
             return ResponseEntity.badRequest().body(
-                    new ResponseError("OTP đã hết hạn."));
+                    new ResponseError("OTP đã hết hạn.")
+            );
         }
 
         User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
+
+        // Kiểm tra mật khẩu
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if(!encoder.matches(password, user.getPassword())) {
+            return ResponseEntity.badRequest().body(
+                    new ResponseError("Mật khẩu không chính xác.")
+            );
+        }
 
         user.setActive(true);
         user.setUpdatedAt(LocalDateTime.now());
