@@ -56,10 +56,10 @@ public class GoogleAuthService {
         // Lấy thông tin tài khoản Google
 
         GoogleIdToken.Payload payload = idToken.getPayload();
-
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");
+        String avatar = (String) payload.get("picture");
 
         // Tìm hoặc tạo User
         User user = userService.getUserByGoogleId(googleId);
@@ -71,6 +71,7 @@ public class GoogleAuthService {
                     .password("") // Không cần mật khẩu cho tài khoản Google
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
+                    .picture(avatar)
                     .isActive(true)
                     .build();
             userService.saveUser(user);

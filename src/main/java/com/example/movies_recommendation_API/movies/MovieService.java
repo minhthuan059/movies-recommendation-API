@@ -3,10 +3,7 @@ package com.example.movies_recommendation_API.movies;
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -42,6 +39,24 @@ public class MovieService {
         }
         return ResponseEntity.ok().body(
                 new ResponseSuccess(movie)
+        );
+    }
+
+    public ResponseEntity<?> getListMovieByIds(
+            List<String> ids,
+            Integer pageNumber, Integer pageSize
+            ){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Movie> movies = movieRepository.findByIdIn(ids, pageable);
+        if (movies == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không tìm thấy phim có id yêu cầu")
+            );
+        }
+        return ResponseEntity.ok().body(
+                new ResponseSuccess(
+                        movies
+                )
         );
     }
 
@@ -108,6 +123,9 @@ public class MovieService {
         // Trả về PageImpl chứa các Movie
         return ResponseEntity.ok().body(pageResult);
     }
+
+
+
 
 
 }

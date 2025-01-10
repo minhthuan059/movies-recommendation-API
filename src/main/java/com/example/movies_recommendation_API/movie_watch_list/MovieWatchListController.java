@@ -17,10 +17,10 @@ public class MovieWatchListController {
     private MovieWatchListService movieWatchListService;
 
     @GetMapping("")
-    public ResponseEntity<?> getMoviesWatchList(@RequestParam Map<String, Object> param){
+    public ResponseEntity<?> getMoviesWatchList(@RequestParam Map<String, String> param){
         return movieWatchListService.getMoviesByUserId(
-                param.get("page") != null ? Integer.parseInt(param.get("page").toString()) : 0,
-                param.get("size") != null ? Integer.parseInt(param.get("size").toString()) : 10
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
         );
     }
 

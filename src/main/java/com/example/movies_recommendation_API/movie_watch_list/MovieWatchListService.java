@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class MovieWatchListService {
     @Autowired
-    private MovieRepository moviesRepository;
+    private MovieRepository movieRepository;
 
     @Autowired
     private MovieWatchListRepository movieWatchListRepository;
@@ -38,12 +38,12 @@ public class MovieWatchListService {
 
         // Gọi repository để lấy Movies với phân trang
         return ResponseEntity.ok().body(
-                moviesRepository.findByCustomIdIn(watchList.getMovieIds(), pageable)
+                movieRepository.findByCustomIdIn(watchList.getMovieIds(), pageable)
         );
     }
 
     public ResponseEntity<?> addMovieToWatchList(Integer movieId) {
-        Movie movie = moviesRepository.findOneById(movieId);
+        Movie movie = movieRepository.findOneById(movieId);
         if (movie == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseError("Movie không tồn tại.")
@@ -74,7 +74,7 @@ public class MovieWatchListService {
     }
 
     public ResponseEntity<?> deleteMovieToWatchList(Integer movieId) {
-        Movie movie = moviesRepository.findOneById(movieId);
+        Movie movie = movieRepository.findOneById(movieId);
         if (movie == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseError("Movie không tồn tại.")
@@ -87,8 +87,8 @@ public class MovieWatchListService {
                     new ResponseError("Danh sách xem trống.")
             );
         } else {
-            if (movieWatchList.getMovieIds().contains(movie.getId())) {
-                movieWatchList.getMovieIds().remove(movie.getId());
+            if (movieWatchList.getMovieIds().contains(movieId)) {
+                movieWatchList.getMovieIds().remove(movieId);
                 if (movieWatchList.getMovieIds().isEmpty()) {
                     movieWatchListRepository.delete(movieWatchList);
                 } else {

@@ -7,8 +7,10 @@ import com.example.movies_recommendation_API.movies.movies_trending_day.MoviesTr
 import com.example.movies_recommendation_API.movies.movies_trending_week.MoviesTrendingWeekService;
 import com.example.movies_recommendation_API.movies.movies_upcoming.MoviesUpcomingService;
 import com.example.movies_recommendation_API.movies.search.SearchService;
+import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +47,7 @@ public class MovieController {
     @Autowired
     private MoviesUpcomingService moviesUpcomingService;
 
+
     @GetMapping("/genres")
     public ResponseEntity<?> getAllGenres() {
         return movieGenresService.getAllMovieGenres();
@@ -53,6 +56,20 @@ public class MovieController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable String id) {
         return movieService.getMovieById(id);
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<?> getListByIds(@RequestBody Map<String, Object> body) {
+        if (body.get("ids") == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không nhận được danh sách id.")
+            );
+        }
+        return movieService.getListMovieByIds(
+                (List<String>) body.get("ids"),
+                body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
+                body.get("size") != null ? Integer.parseInt(body.get("size").toString()) : 10
+        );
     }
 
     @GetMapping("/search")
@@ -135,4 +152,5 @@ public class MovieController {
                 param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
         );
     }
+
 }

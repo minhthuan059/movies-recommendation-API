@@ -85,8 +85,8 @@ public class MovieFavoriteListService {
                     new ResponseError("Danh sách yêu thích của người dùng trống.")
             );
         } else {
-            if (movieFavoriteList.getMovieIds().contains(movie.getId())) {
-                movieFavoriteList.getMovieIds().remove(movie.getId());
+            if (movieFavoriteList.getMovieIds().contains(movieId)) {
+                movieFavoriteList.getMovieIds().remove(movieId);
                 if (movieFavoriteList.getMovieIds().isEmpty()) {
                     movieFavoriteListRepository.delete(movieFavoriteList);
                 } else {

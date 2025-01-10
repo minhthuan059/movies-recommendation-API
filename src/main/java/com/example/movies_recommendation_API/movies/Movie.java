@@ -1,5 +1,6 @@
 package com.example.movies_recommendation_API.movies;
 
+import com.example.movies_recommendation_API.reviews.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -118,6 +119,6 @@ public class Movie {
     private List<Map<String, Object>> keywords;
 
     @Field("reviews")
-    private List<Map<String, Object>> reviews;
+    private List<Review> reviews;
 }
 

@@ -23,6 +23,6 @@ public class MovieRatingList {
     @Field("userId")
     private String userId;
 
-    @Field("rating")
-    private List<Map<String, Object>> ratingList;
+    @Field("ratings")
+    private List<Map<String, Object>> ratings;
 }

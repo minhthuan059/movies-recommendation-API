@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface MovieRepository  extends MongoRepository<Movie, Long> {
 
+    @Query("{ '_id': { $in: ?0 } }")
+    Page<Movie> findByIdIn(List<String> ids, Pageable pageable);
+
     @Query("{ 'id': ?0 }")
     Movie findOneById(@Param("id") Integer id);
 

@@ -9,29 +9,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/movie-rating")
+@RequestMapping("/movie-rating-list")
 public class MovieRatingListController {
 
     @Autowired
     private MovieRatingListService movieRatingListService;
 
 
-    @PostMapping("")
-    public ResponseEntity<?> postAddToMoviesWatchList(@RequestBody Map<String, Object> body) {
-        if (body.get("movieId") == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseError("Không nhận được id phim.")
-            );
-        } else if (body.get("rating") == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseError("Không nhận được điểm đáng giá.")
-            );
-        } else {
-            return movieRatingListService.addRatingToMovieRatingList(
-                    Integer.parseInt(body.get("movieId").toString()),
-                    Double.parseDouble(body.get("rating").toString())
-            );
-        }
+//    @PostMapping("")
+//    public ResponseEntity<?> postAddToMoviesRatingList(@RequestBody Map<String, Object> body) {
+//        if (body.get("movieId") == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                    new ResponseError("Không nhận được id phim.")
+//            );
+//        } else if (body.get("rating") == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                    new ResponseError("Không nhận được điểm đáng giá.")
+//            );
+//        } else {
+//            return movieRatingListService.addRatingToMovieRatingList(
+//                    Integer.parseInt(body.get("movieId").toString()),
+//                    Double.parseDouble(body.get("rating").toString())
+//            );
+//        }
+//    }
+
+    @GetMapping("")
+    public ResponseEntity<?> getAllMovieInRatingList(@RequestParam Map<String, String> param) {
+        return movieRatingListService.getMoviesByUserId(
+                param.get("page") != null ? Integer.parseInt(param.get("page")) : 0,
+                param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
+        );
+    }
+
+
+//    @DeleteMapping("/{movieId}")
+//    public ResponseEntity<?> deleteMovieInRatingList(@PathVariable String movieId){
+//        if (movieId == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                    new ResponseError("Không nhận được id phim.")
+//            );
+//        } else {
+//            return movieRatingListService.deleteMovieInRatingList(
+//                    Integer.parseInt(movieId)
+//            );
+//        }
+//    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<?> deleteAllMovieInMoviesWatchList(){
+        return movieRatingListService.deleteAllMovieToRatingList();
     }
 
 }

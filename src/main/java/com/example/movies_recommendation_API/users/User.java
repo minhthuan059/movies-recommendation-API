@@ -35,6 +35,9 @@ public class User {
     @Field("updatedAt")
     private LocalDateTime updatedAt;
 
+    @Field("picture")
+    private String picture;
+
     @Field("isActive")
     private boolean isActive;
 
