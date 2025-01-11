@@ -11,15 +11,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @AllArgsConstructor
 @Builder
 public class AuthorDetails {
-    @Field("name")
     private String name;
-
-    @Field("username")
     private String username;
-
-    @Field("avatar_path")
     private String avatar_path;
-
-    @Field("rating")
     private Double rating;
 }

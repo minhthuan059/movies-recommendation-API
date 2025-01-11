@@ -20,7 +20,7 @@ public class MovieService {
 
     @Autowired
     private MovieRepository movieRepository;
-    
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -72,11 +72,17 @@ public class MovieService {
                 Aggregation.match(Criteria.where("trailers").ne(null)),
 
                 // Trích xuất và so sánh ngày phát hành trailer mới nhất
-                Aggregation.project("trailers")
+                Aggregation.project("trailers", "_id", "title", "id", "tmdb_id")
                         .and("trailers.published_at").as("latestTrailerDate"),
 
                 // Sắp xếp các movie theo trailer mới nhất
                 Aggregation.sort(Sort.by(Sort.Order.desc("latestTrailerDate"))),
+
+                Aggregation.group("_id")  // Nhóm theo movieId (hoặc _id)
+                        .first("trailers").as("latestTrailer")  // Lấy trailer mới nhất
+                        .first("title").as("title")            // Lấy title của movie
+                        .first("id").as("id")                  // Lấy id của movie
+                        .first("tmdb_id").as("tmdb_id"),
 
                 // Phân trang - skip và limit
                 Aggregation.skip(skip),
@@ -96,36 +102,5 @@ public class MovieService {
         // Trả về kết quả
         return ResponseEntity.ok(page);
     }
-
-    public ResponseEntity<?> getMoviesSortedByLatestTrailerWithPagination(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
-        // Tạo aggregation pipeline với phân trang
-        Aggregation aggregation = Aggregation.newAggregation(
-                Aggregation.unwind("trailers"),
-                Aggregation.sort(Sort.Order.desc("trailers.published_at").getDirection()),
-                Aggregation.group("_id")
-                        .first("trailers").as("latestTrailer")
-                        .push("trailers").as("allTrailers"),
-                Aggregation.sort(Sort.Order.desc("latestTrailer.published_at").getDirection()),
-                Aggregation.skip((long) pageable.getPageNumber() * pageable.getPageSize()),
-                Aggregation.limit(pageable.getPageSize())
-        );
-
-        // Thực thi aggregation
-        AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
-
-        // Tổng số phần tử (để sử dụng cho phân trang)
-        long totalElements = mongoTemplate.count(new org.springframework.data.mongodb.core.query.Query(), Movie.class);
-
-        List<Movie> pageResult = (List<Movie>) new PageImpl<>(results.getMappedResults(), pageable, totalElements);
-        
-        // Trả về PageImpl chứa các Movie
-        return ResponseEntity.ok().body(pageResult);
-    }
-
-
-
-
 
 }

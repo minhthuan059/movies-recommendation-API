@@ -34,6 +34,5 @@ public interface MovieRepository  extends MongoRepository<Movie, Long> {
                              String startDate, String endDate,
                              Pageable pageable);
 
-
 }
 
