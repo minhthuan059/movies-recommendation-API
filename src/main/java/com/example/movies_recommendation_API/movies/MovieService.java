@@ -78,19 +78,17 @@ public class MovieService {
                 // Sắp xếp các movie theo trailer mới nhất
                 Aggregation.sort(Sort.by(Sort.Order.desc("latestTrailerDate"))),
 
-                Aggregation.group("_id")  // Nhóm theo movieId (hoặc _id)
-                        .first("trailers").as("latestTrailer")  // Lấy trailer mới nhất
-                        .first("title").as("title")            // Lấy title của movie
-                        .first("id").as("id")                  // Lấy id của movie
-                        .first("tmdb_id").as("tmdb_id"),
-
                 // Phân trang - skip và limit
                 Aggregation.skip(skip),
                 Aggregation.limit(limit)
         );
 
+        // Thực hiện aggregation
+       AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
+
+
         // Thực thi aggregation
-        AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
+     //   AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
 
 
         // Tổng số phần tử trong collection
