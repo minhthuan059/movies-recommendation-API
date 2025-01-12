@@ -15,7 +15,7 @@ public interface MovieRepository  extends MongoRepository<Movie, Long> {
     Page<Movie> findByIdIn(List<String> ids, Pageable pageable);
 
     @Query("{ 'id': ?0 }")
-    Movie findOneById(@Param("id") Integer id);
+    Movie findOneById(Integer id);
 
     @Query("{ 'id': { $in: ?0 } }")
     Page<Movie> findByCustomIdIn(List<Integer> ids, Pageable pageable);

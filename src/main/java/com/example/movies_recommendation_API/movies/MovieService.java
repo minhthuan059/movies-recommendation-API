@@ -72,7 +72,7 @@ public class MovieService {
                 Aggregation.match(Criteria.where("trailers").ne(null)),
 
                 // Trích xuất và so sánh ngày phát hành trailer mới nhất
-                Aggregation.project("trailers", "_id", "title", "id", "tmdb_id")
+                Aggregation.project("trailers", "_id", "title", "id", "tmdb_id", "backdrop_path", "poster_path")
                         .and("trailers.published_at").as("latestTrailerDate"),
 
                 // Sắp xếp các movie theo trailer mới nhất

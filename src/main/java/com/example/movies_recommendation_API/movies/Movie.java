@@ -29,7 +29,7 @@ public class Movie {
     private boolean adult;
 
     @Field("backdrop_path")
-    private String backdropPath;
+    private String backdrop_path;
 
     @Field("belongs_to_collection")
     private Map<String, Object> belongs_to_collection;
