@@ -37,47 +37,50 @@ public class FilterService {
     ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
+
+        // Xây dựng điều kiện chung
+        Criteria criteria = new Criteria();
+
+        if (Objects.equals(type, "AND")) {
+            if (genres != null && !genres.isEmpty()) {
+                criteria.and("genres.name").all(genres);
+            }
+            if (keywords != null && !keywords.isEmpty()) {
+                criteria.and("keywords.name").all(keywords);
+            }
+        } else {
+            if (genres != null && !genres.isEmpty()) {
+                criteria.and("genres.name").in(genres);
+            }
+            if (keywords != null && !keywords.isEmpty()) {
+                criteria.and("keywords.name").in(keywords);
+            }
+        }
+
+        if (!startDate.isEmpty() && !endDate.isEmpty()) {
+            criteria.and("release_date").gte(startDate).lte(endDate);
+        } else if (!startDate.isEmpty()) {
+            criteria.and("release_date").gte(startDate);
+        } else if (!endDate.isEmpty()) {
+            criteria.and("release_date").lte(endDate);
+        }
+
+        if (minVoteAverage >= 0 && maxVoteAverage <= 10) {
+            criteria.and("vote_average").gte(minVoteAverage).lte(maxVoteAverage);
+        } else if (minVoteAverage >= 0) {
+            criteria.and("vote_average").gte(minVoteAverage);
+        } else if (maxVoteAverage <= 10) {
+            criteria.and("vote_average").lte(maxVoteAverage);
+        }
+
+        Aggregation aggregation = null;
+        Aggregation countAggregation = null;
         if (!Objects.equals(collectionName, "")) {
-            // Xây dựng điều kiện chung
-            Criteria criteria = new Criteria().andOperator(
-                    Criteria.where("vote_average").gte(minVoteAverage).lte(maxVoteAverage)
-            );
-
-            if (Objects.equals(type, "AND")) {
-                if (genres != null && !genres.isEmpty()) {
-                    criteria.and("genres.id").all(genres);
-                }
-                if (keywords != null && !keywords.isEmpty()) {
-                    criteria.and("keywords.name").all(keywords);
-                }
-            } else {
-                if (genres != null && !genres.isEmpty()) {
-                    criteria.and("genres.id").in(genres);
-                }
-
-                if (keywords != null && !keywords.isEmpty()) {
-                    criteria.and("keywords.name").in(keywords);
-                }
-            }
-
-            if (!startDate.isEmpty() && !endDate.isEmpty()) {
-                criteria.and("release_date").gte(startDate).lte(endDate);
-            } else if (!startDate.isEmpty()) {
-                criteria.and("release_date").gte(startDate);
-            } else if (!endDate.isEmpty()) {
-                criteria.and("release_date").lte(endDate);
-            }
-
-
             // Tạo aggregation để lọc theo các điều kiện và kết nối với collectionName
-            Aggregation aggregation = Aggregation.newAggregation(
+           aggregation = Aggregation.newAggregation(
                     // Kết hợp các điều kiện vào một match duy nhất
                     Aggregation.match(criteria),
-
-                    // Kết nối với collection movie_trending_day
                     Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
-
-                    // Lọc chỉ những phim có mặt trong trending
                     Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
 
                     // Chỉ lấy các bản ghi trong phạm vi phân trang
@@ -85,11 +88,7 @@ public class FilterService {
                     Aggregation.limit(pageable.getPageSize())      // Giới hạn số lượng phần tử của trang hiện tại
             );
 
-            // Thực hiện aggregation để lấy danh sách kết quả
-            AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, "movies", Movie.class);
-
-            // Tính tổng số phần tử (count)
-            Aggregation countAggregation = Aggregation.newAggregation(
+            countAggregation = Aggregation.newAggregation(
                     Aggregation.match(criteria),  // Sử dụng lại criteria đã có
 
                     Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
@@ -99,29 +98,37 @@ public class FilterService {
                     // Đếm tổng số phần tử sau khi lọc và join
                     Aggregation.count().as("total")
             );
+        } else {
+            aggregation = Aggregation.newAggregation(
+                    // Kết hợp các điều kiện vào một match duy nhất
+                    Aggregation.match(criteria),
 
-            // Thực hiện aggregation để lấy tổng số phần tử
-            AggregationResults<Map> countResults = mongoTemplate.aggregate(countAggregation, "movies", Map.class);
-            int totalElement = (countResults.getMappedResults().isEmpty()) ? 0 : (int) countResults.getMappedResults().get(0).get("total");
-
-            // Trả về kết quả dưới dạng phân trang
-            Page<Movie> page = new PageImpl<>(results.getMappedResults(), pageable, totalElement);
-
-            return ResponseEntity.ok().body(new ResponseSuccess(page));
-
-
-        }
-        else {
-            Page<Movie> result = movieRepository.filterMovies(
-                    genres,
-                    minVoteAverage, maxVoteAverage,
-                    startDate, endDate,
-                    pageable
+                    // Chỉ lấy các bản ghi trong phạm vi phân trang
+                    Aggregation.skip((long) pageable.getOffset()),  // Bỏ qua các phần tử của các trang trước
+                    Aggregation.limit(pageable.getPageSize())      // Giới hạn số lượng phần tử của trang hiện tại
             );
-            return ResponseEntity.ok().body(
-                    new ResponseSuccess(result)
+            countAggregation = Aggregation.newAggregation(
+                    Aggregation.match(criteria),  // Sử dụng lại criteria đã có
+
+                    // Đếm tổng số phần tử sau khi lọc và join
+                    Aggregation.count().as("total")
             );
         }
+
+
+
+        // Thực hiện aggregation để lấy danh sách kết quả
+        AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, "movies", Movie.class);
+
+
+        // Thực hiện aggregation để lấy tổng số phần tử
+        AggregationResults<Map> countResults = mongoTemplate.aggregate(countAggregation, "movies", Map.class);
+        int totalElement = (countResults.getMappedResults().isEmpty()) ? 0 : (int) countResults.getMappedResults().get(0).get("total");
+
+        // Trả về kết quả dưới dạng phân trang
+        Page<Movie> page = new PageImpl<>(results.getMappedResults(), pageable, totalElement);
+        return ResponseEntity.ok().body(new ResponseSuccess(page));
+
 
     }
 }

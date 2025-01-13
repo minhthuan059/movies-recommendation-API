@@ -28,11 +28,7 @@ public interface MovieRepository  extends MongoRepository<Movie, Long> {
     @Query("{ '$and': [ { 'title': { '$regex': ?0, '$options': 'i' } }, { 'credits.cast.name': { '$regex': ?1, '$options': 'i' } } ] }")
     Page<Movie> findListByTitleAndCastName(String title, String castName, Pageable pageable);
 
-    @Query("{'genres.name': { $all: ?0 }, 'vote_average': { $gte: ?1, $lte: ?2 }, 'release_date': { $gte: ?3, $lte: ?4 }}")
-    Page<Movie> filterMovies(List<String> genres,
-                             Double minVoteAverage, Double maxVoteAverage,
-                             String startDate, String endDate,
-                             Pageable pageable);
+
 
 }
 

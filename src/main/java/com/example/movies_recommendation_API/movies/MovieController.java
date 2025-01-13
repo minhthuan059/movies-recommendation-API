@@ -47,6 +47,11 @@ public class MovieController {
     @Autowired
     private MoviesUpcomingService moviesUpcomingService;
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllMovies() {
+        return movieService.getAllMovies();
+    }
+
 
     @GetMapping("/genres")
     public ResponseEntity<?> getAllGenres() {
@@ -97,14 +102,13 @@ public class MovieController {
                     new ResponseSuccess(movieService.getAllMovies()));
 
         }
-
         return filterService.filterMovies(
-                Objects.equals(body.get("type").toString(), "OR") ? "OR" : "AND",
+                Objects.equals(body.get("type"), "OR") ? "OR" : "AND",
                 body.get("collection") != null ? body.get("collection").toString() : "",
                 body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
                 body.get("keywords") != null ? (List<String>) body.get("keywords") : List.of(),
-                body.get("minVote") != null ? Double.parseDouble( body.get("minVote").toString()) : 0,
-                body.get("maxVote") != null ? Double.parseDouble( body.get("maxVote").toString()) : 10,
+                body.get("minVote") != null ? Double.parseDouble( body.get("minVote").toString()) : -1,
+                body.get("maxVote") != null ? Double.parseDouble( body.get("maxVote").toString()) : 11,
                 body.get("startDate") != null ? (String) body.get("startDate") : "",
                 body.get("endDate") != null ? (String) body.get("endDate") : "",
                 body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
