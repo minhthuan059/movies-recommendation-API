@@ -24,6 +24,12 @@ public class MovieWatchListController {
         );
     }
 
+    @GetMapping("/{movieId}")
+    public ResponseEntity<?> getCheckInFavoriteList(@PathVariable String movieId){
+        return movieWatchListService.getCheckMoviesByInList(Integer.parseInt(movieId));
+    }
+
+
     @PostMapping("")
     public ResponseEntity<?> postAddToMoviesWatchList(@RequestBody Map<String, Object> body){
         if (body.get("movieId") == null) {

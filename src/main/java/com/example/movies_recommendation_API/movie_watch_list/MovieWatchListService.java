@@ -42,6 +42,26 @@ public class MovieWatchListService {
         );
     }
 
+    public ResponseEntity<?> getCheckMoviesByInList(Integer movieId) {
+        Movie movie = movieRepository.findOneById(movieId);
+        if (movie == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponseError("Movie không tồn tại.")
+            );
+        }
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MovieWatchList movieWatchList = movieWatchListRepository.findByUserId(user.get_id());
+        if (movieWatchList == null || !movieWatchList.getMovieIds().contains(movie.getId())) {
+            return ResponseEntity.ok().body(
+                    new ResponseSuccess(false)
+            );
+        } else {
+            return ResponseEntity.ok().body(
+                    new ResponseSuccess(true)
+            );
+        }
+    }
+
     public ResponseEntity<?> addMovieToWatchList(Integer movieId) {
         Movie movie = movieRepository.findOneById(movieId);
         if (movie == null) {

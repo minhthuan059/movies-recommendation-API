@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MovieFavoriteListService {
@@ -38,6 +39,27 @@ public class MovieFavoriteListService {
         return ResponseEntity.ok().body(
                 movieRepository.findByCustomIdIn(watchList.getMovieIds(), pageable)
         );
+    }
+
+
+    public ResponseEntity<?> getCheckMoviesByInList(Integer movieId) {
+        Movie movie = movieRepository.findOneById(movieId);
+        if (movie == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new ResponseError("Movie không tồn tại.")
+            );
+        }
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        MovieFavoriteList movieFavoriteList = movieFavoriteListRepository.findByUserId(user.get_id());
+        if (movieFavoriteList == null || !movieFavoriteList.getMovieIds().contains(movie.getId())) {
+            return ResponseEntity.ok().body(
+                    new ResponseSuccess(false)
+            );
+        } else {
+            return ResponseEntity.ok().body(
+                    new ResponseSuccess(true)
+            );
+        }
     }
 
     public ResponseEntity<?> addMovieToFavoriteList(Integer movieId) {
