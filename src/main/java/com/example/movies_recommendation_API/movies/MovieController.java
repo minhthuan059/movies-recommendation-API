@@ -97,6 +97,7 @@ public class MovieController {
                 && !body.containsKey("keywords")
                 && !body.containsKey("minVote") && !body.containsKey("maxVote")
                 && !body.containsKey("startDate") && !body.containsKey("endDate")
+                && !body.containsKey("title")
         ) {
             return ResponseEntity.ok().body(
                     new ResponseSuccess(movieService.getAllMovies()));
@@ -105,6 +106,7 @@ public class MovieController {
         return filterService.filterMovies(
                 Objects.equals(body.get("type"), "OR") ? "OR" : "AND",
                 body.get("collection") != null ? body.get("collection").toString() : "",
+                body.get("title") != null ? body.get("title").toString() : "",
                 body.get("genres") != null ? (List<String>) body.get("genres") : List.of(),
                 body.get("keywords") != null ? (List<String>) body.get("keywords") : List.of(),
                 body.get("minVote") != null ? Double.parseDouble( body.get("minVote").toString()) : -1,

@@ -29,7 +29,8 @@ public class FilterService {
     private MovieRepository movieRepository;
 
     public ResponseEntity<?> filterMovies(
-            String type, String collectionName,
+            String type,
+            String collectionName, String title,
             List<String> genres, List<String> keywords,
             Double minVoteAverage, Double maxVoteAverage,
             String startDate, String endDate,
@@ -41,6 +42,9 @@ public class FilterService {
         // Xây dựng điều kiện chung
         Criteria criteria = new Criteria();
 
+        if (title != null && !title.isEmpty()) {
+            criteria = Criteria.where("title").regex(title, "i");
+        }
         if (Objects.equals(type, "AND")) {
             if (genres != null && !genres.isEmpty()) {
                 criteria.and("genres.name").all(genres);
