@@ -102,8 +102,9 @@ public class ReviewService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Optional<Review> reviewOptional = movie.getReviews().stream()
-                .filter(review -> review.getId().equals(user.get_id()))  // So sánh id của review với id đã cho
+                .filter(review -> review.getId() != null && review.getId().equals(user.get_id()))  // Kiểm tra null
                 .findFirst();
+
 
         if (reviewOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
