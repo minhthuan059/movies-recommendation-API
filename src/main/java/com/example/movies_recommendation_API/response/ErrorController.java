@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorController  {
 
-
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
         ResponseError error = new ResponseError();
@@ -42,5 +41,4 @@ public class ErrorController  {
         error.setMessage("Lỗi không gửi được OTP.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-
 }

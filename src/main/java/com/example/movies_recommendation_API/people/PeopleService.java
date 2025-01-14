@@ -41,5 +41,4 @@ public class PeopleService {
                 new ResponseSuccess(people)
         );
     }
-
 }

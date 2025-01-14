@@ -8,9 +8,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-
 
 @Service
 public class UserService {
@@ -30,13 +27,6 @@ public class UserService {
     private EmailService emailService;
 
     private final Map<String, OTP> otpStore = new ConcurrentHashMap<>();
-
-
-//    private final PasswordEncoder passwordEncoder;
-//
-//    public UserService(PasswordEncoder passwordEncoder) {
-//        this.passwordEncoder = passwordEncoder;
-//    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -93,7 +83,6 @@ public class UserService {
             ResponseError error = new ResponseError("Có lỗi trong quá trình tạo tài khoản.");
             return ResponseEntity.badRequest().body(error);
         }
-
     }
 
     public ResponseEntity<?> createAndSendOTP(String email) throws MessagingException {
@@ -106,10 +95,8 @@ public class UserService {
 
         // Tạo OTP
         String otp = String.format("%06d", new Random().nextInt(999999));
-
         OTP otpData = new OTP(otp, LocalDateTime.now().plusMinutes(5));
         otpStore.put(email, otpData);
-
 
         // Gửi OTP qua email
         String emailContent = "<p>Mã OTP của bạn là:</p><h1>" + otp + "</h1>" +
@@ -121,7 +108,6 @@ public class UserService {
 
     public ResponseEntity<?> validateOtpAndResetPassword(String email, String otp, String newPassword) {
         OTP otpData = otpStore.get(email);
-
         if (otpData == null) {
             return ResponseEntity.badRequest().body(
                     new ResponseError("OTP không tồn tại."));
@@ -139,7 +125,6 @@ public class UserService {
         }
 
         User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encodedPassword = encoder.encode(newPassword);
         user.setPassword(encodedPassword);
@@ -158,7 +143,6 @@ public class UserService {
 
     public ResponseEntity<?> validateOtpAndActiveUser(String email, String password, String otp) {
         OTP otpData = otpStore.get(email);
-
         if (otpData == null) {
             return ResponseEntity.badRequest().body(
                     new ResponseError("OTP không tồn tại.")
@@ -177,13 +161,10 @@ public class UserService {
                     new ResponseError("OTP đã hết hạn.")
             );
         }
-
         User user = userRepository.findOneByEmailAndGoogleIdIsEmpty(email);
 
         // Kiểm tra mật khẩu
-
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
         if(!encoder.matches(password, user.getPassword())) {
             return ResponseEntity.badRequest().body(
                     new ResponseError("Mật khẩu không chính xác.")
@@ -203,5 +184,4 @@ public class UserService {
                 new ResponseSuccess()
         );
     }
-
 }

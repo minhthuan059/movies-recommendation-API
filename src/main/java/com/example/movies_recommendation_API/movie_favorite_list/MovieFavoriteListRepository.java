@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MovieFavoriteListRepository extends MongoRepository<MovieFavoriteList, String> {
     Page<MovieFavoriteList> findAll(Pageable pageable);
-
     MovieFavoriteList findByUserId(String userId);
 }

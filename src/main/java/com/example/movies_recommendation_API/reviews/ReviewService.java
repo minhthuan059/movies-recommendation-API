@@ -30,26 +30,22 @@ public class ReviewService {
             String content,
             Double rating
     ) {
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Movie movie = movieRepository.findOneById(movieId);
         if (movie == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseError("Movie không tồn tại.")
             );
         }
-        List<Review> reviews = movie.getReviews();
 
+        List<Review> reviews = movie.getReviews();
         boolean userHasReviewed = reviews.stream()
                 .anyMatch(review -> user.get_id().equals(review.getId()));
-
         if (userHasReviewed) {
             return  ResponseEntity.ok().body(
                     new ResponseError("Người xem đã review phim.")
             );
         }
-
         if (rating < 0 || rating > 10) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseError("Điểm đánh giá phải trong khoảng 0 đến 10.")
@@ -71,10 +67,8 @@ public class ReviewService {
         review.setUpdated_at(LocalDateTime.now());
         review.setUrl("");
 
-
         Double voteAverage = movie.getVoteAverage();
         Integer voteCount = movie.getVoteCount();
-
         voteAverage = (voteAverage * voteCount + rating) / (voteCount + 1);
         voteCount += 1;
         movie.setVoteAverage(voteAverage);
@@ -82,7 +76,6 @@ public class ReviewService {
         movie.getReviews().add(review);
 
         movieRepository.save(movie);
-
         movieRatingListService.addRatingToMovieRatingList(
                 movieId, rating
         );
@@ -90,7 +83,6 @@ public class ReviewService {
                 new ResponseSuccess()
         );
     }
-
 
     public ResponseEntity<?> deleteReviewInMovie(Integer movieId) {
         Movie movie = movieRepository.findOneById(movieId);
@@ -105,7 +97,6 @@ public class ReviewService {
                 .filter(review -> review.getId() != null && review.getId().equals(user.get_id()))  // Kiểm tra null
                 .findFirst();
 
-
         if (reviewOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseError("Người dùng chưa đánh giá movie.")
@@ -117,10 +108,8 @@ public class ReviewService {
 
         voteAverage = (voteAverage * voteCount - review.getAuthor_details().getRating()) / (voteCount - 1);
         voteCount -= 1;
-
         movie.setVoteAverage(voteAverage);
         movie.setVoteCount(voteCount);
-
         movie.getReviews().remove(review);
 
         movieRepository.save(movie);
@@ -136,7 +125,6 @@ public class ReviewService {
             return ;
         }
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         Optional<Review> reviewOptional = movie.getReviews().stream()
                 .filter(review -> review.getId().equals(user.get_id()))  // So sánh id của review với id đã cho
                 .findFirst();
@@ -144,6 +132,7 @@ public class ReviewService {
         if (reviewOptional.isEmpty()) {
             return;
         }
+
         Review review = reviewOptional.get();
         Integer voteCount = movie.getVoteCount();
         Double voteAverage = movie.getVoteAverage();
@@ -155,5 +144,4 @@ public class ReviewService {
         movie.getReviews().remove(review);
         movieRepository.save(movie);
     }
-
 }

@@ -26,5 +26,4 @@ public class PeopleController {
                 param.get("size") != null ? Integer.parseInt(param.get("size")) : 10
         );
     }
-
 }

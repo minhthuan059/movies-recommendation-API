@@ -1,6 +1,5 @@
 package com.example.movies_recommendation_API.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

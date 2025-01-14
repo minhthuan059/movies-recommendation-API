@@ -10,18 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class SearchService {
     @Autowired
     private MovieRepository movieRepository;
-
-//    // Tìm kiếm chính xác theo original_title
-//    public List<Movie> searchByOriginalTitle(String originalTitle) {
-//        return movieRepository.findLiByOriginalTitle(originalTitle);
-//    }
 
     // Tìm kiếm gần đúng theo keyword
     public ResponseEntity<?> searchByTitle(String keyword) {
@@ -40,7 +32,7 @@ public class SearchService {
 
     public ResponseEntity<?> searchByTitleAndCastName(String title, String cast, Integer pageNumber, Integer pageSize) {
         // Tạo Pageable từ số trang và số phần tử mỗi trang
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         // Tìm kiếm phim với các điều kiện
         Page<Movie> result = movieRepository.findListByTitleAndCastName(title, cast, pageable);

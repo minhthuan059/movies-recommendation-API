@@ -117,13 +117,12 @@ public class MovieRatingListService {
                 })
                 .collect(Collectors.toList());
         // Trả về kết quả dưới dạng phân trang
-        PageImpl<Map<String, Object>> page = new PageImpl<>(movies, pageable, total);
-
+        PageImpl<Map<String, Object>> pageResult = new PageImpl<>(movies, pageable, total);
 
         // Trả về kết quả dưới dạng Page
         return ResponseEntity.ok().body(
                 new ResponseSuccess(
-                    page
+                    pageResult
                 )
         );
     }
@@ -147,7 +146,6 @@ public class MovieRatingListService {
                 } else {
                     movieRatingListRepository.save(movieRatingList);
                 }
-                return ;
             }
         }
     }
@@ -169,7 +167,5 @@ public class MovieRatingListService {
         return ResponseEntity.ok().body(
                 new ResponseSuccess()
         );
-
     }
-
 }

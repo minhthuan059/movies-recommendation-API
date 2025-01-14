@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -35,12 +34,10 @@ public class UserController {
     @Autowired
     private GoogleAuthService googleAuthService;
 
-
     @GetMapping("")
     public ResponseEntity<?> getUsers() {
         return ResponseEntity.ok().body(userService.getAllUsers());
     }
-
 
     @PostMapping("/register")
     public ResponseEntity<?> postRegisterUser(@Valid @RequestBody UserCreateDTO user) {
@@ -59,7 +56,6 @@ public class UserController {
 
             // Tạo JWT token
             String token = jwtService.generateToken(user);
-
             LoginResponseSuccess res = new LoginResponseSuccess();
             res.setUsername(user.getUsername());
             res.setToken(token);
@@ -67,10 +63,8 @@ public class UserController {
         } catch (AuthenticationException e) {
             ResponseError error = new ResponseError(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-
         }
     }
-
 
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile() {

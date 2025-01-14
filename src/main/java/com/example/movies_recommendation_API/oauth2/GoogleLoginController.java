@@ -1,12 +1,13 @@
 package com.example.movies_recommendation_API.oauth2;
 
-import com.example.movies_recommendation_API.Jwt.JwtService;
 import com.example.movies_recommendation_API.response.ResponseError;
-import com.example.movies_recommendation_API.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -16,7 +17,6 @@ public class GoogleLoginController {
 
     @Autowired
     private GoogleAuthService googleAuthService;
-
 
     @PostMapping("")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> body) {
@@ -30,12 +30,9 @@ public class GoogleLoginController {
 
             // Xác thực Google tokenId và tạo JWT
             return googleAuthService.authenticateGoogleToken(tokenId);
-
         } catch (Exception e) {
             ResponseError error = new ResponseError(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
-
-
 }

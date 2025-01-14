@@ -1,21 +1,19 @@
 package com.example.movies_recommendation_API.oauth2;
 
 import com.example.movies_recommendation_API.Jwt.JwtService;
-import com.example.movies_recommendation_API.users.User;
 import com.example.movies_recommendation_API.response.LoginResponseSuccess;
 import com.example.movies_recommendation_API.response.ResponseError;
+import com.example.movies_recommendation_API.users.User;
 import com.example.movies_recommendation_API.users.UserService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.google.api.client.json.gson.GsonFactory;
-
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -47,14 +45,12 @@ public class GoogleAuthService {
                 .build();
 
         GoogleIdToken idToken = verifier.verify(tokenId);
-
         if (idToken == null) {
             ResponseError error = new ResponseError("Id token không hợp lệ.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
 
         // Lấy thông tin tài khoản Google
-
         GoogleIdToken.Payload payload = idToken.getPayload();
         String googleId = payload.getSubject();
         String email = payload.getEmail();
@@ -75,7 +71,6 @@ public class GoogleAuthService {
                     .isActive(true)
                     .build();
             userService.saveUser(user);
-
         }
 
         String token = jwtService.generateToken(user);

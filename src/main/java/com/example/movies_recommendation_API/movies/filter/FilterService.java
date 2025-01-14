@@ -22,6 +22,7 @@ import java.util.Objects;
 
 @Service
 public class FilterService {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -37,7 +38,6 @@ public class FilterService {
             Integer pageNumber, Integer pageSize
     ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-
 
         // Xây dựng điều kiện chung
         Criteria criteria = new Criteria();
@@ -81,24 +81,19 @@ public class FilterService {
         Aggregation countAggregation = null;
         if (!Objects.equals(collectionName, "")) {
             // Tạo aggregation để lọc theo các điều kiện và kết nối với collectionName
-           aggregation = Aggregation.newAggregation(
+            aggregation = Aggregation.newAggregation(
                     // Kết hợp các điều kiện vào một match duy nhất
                     Aggregation.match(criteria),
                     Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
                     Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
-
                     // Chỉ lấy các bản ghi trong phạm vi phân trang
                     Aggregation.skip((long) pageable.getOffset()),  // Bỏ qua các phần tử của các trang trước
                     Aggregation.limit(pageable.getPageSize())      // Giới hạn số lượng phần tử của trang hiện tại
             );
-
             countAggregation = Aggregation.newAggregation(
                     Aggregation.match(criteria),  // Sử dụng lại criteria đã có
-
                     Aggregation.lookup(collectionName, "id", "id", "trending_movies"),
-
                     Aggregation.match(Criteria.where("trending_movies").ne(Collections.emptyList())),
-
                     // Đếm tổng số phần tử sau khi lọc và join
                     Aggregation.count().as("total")
             );
@@ -119,11 +114,8 @@ public class FilterService {
             );
         }
 
-
-
         // Thực hiện aggregation để lấy danh sách kết quả
         AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, "movies", Movie.class);
-
 
         // Thực hiện aggregation để lấy tổng số phần tử
         AggregationResults<Map> countResults = mongoTemplate.aggregate(countAggregation, "movies", Map.class);
@@ -132,7 +124,5 @@ public class FilterService {
         // Trả về kết quả dưới dạng phân trang
         Page<Movie> page = new PageImpl<>(results.getMappedResults(), pageable, totalElement);
         return ResponseEntity.ok().body(new ResponseSuccess(page));
-
-
     }
 }

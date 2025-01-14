@@ -11,6 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/review")
 public class ReviewController {
+
     @Autowired
     private ReviewService reviewService;
 
@@ -21,13 +22,11 @@ public class ReviewController {
                     new ResponseError("Không nhận được Id phim.")
             );
         }
-
         if (!body.containsKey("rating") && !body.containsKey("content")) {
             return ResponseEntity.ok().body(
                     new ResponseError("Nội dung rating và content rỗng.")
             );
         }
-
         return reviewService.addReviewToMovie(
                 Integer.parseInt(body.get("movieId").toString()),
                 body.get("content") != null ?  body.get("content").toString() : "",
@@ -47,5 +46,4 @@ public class ReviewController {
             );
         }
     }
-
 }

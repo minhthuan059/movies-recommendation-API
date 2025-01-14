@@ -52,7 +52,6 @@ public class MovieController {
         return movieService.getAllMovies();
     }
 
-
     @GetMapping("/genres")
     public ResponseEntity<?> getAllGenres() {
         return movieGenresService.getAllMovieGenres();

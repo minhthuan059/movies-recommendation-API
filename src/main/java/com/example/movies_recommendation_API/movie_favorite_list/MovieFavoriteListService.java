@@ -2,7 +2,6 @@ package com.example.movies_recommendation_API.movie_favorite_list;
 
 import com.example.movies_recommendation_API.movies.Movie;
 import com.example.movies_recommendation_API.movies.MovieRepository;
-import com.example.movies_recommendation_API.movies.MovieService;
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import com.example.movies_recommendation_API.users.User;
@@ -15,7 +14,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class MovieFavoriteListService {

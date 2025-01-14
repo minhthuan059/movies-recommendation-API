@@ -29,7 +29,6 @@ public class MovieWatchListController {
         return movieWatchListService.getCheckMoviesByInList(Integer.parseInt(movieId));
     }
 
-
     @PostMapping("")
     public ResponseEntity<?> postAddToMoviesWatchList(@RequestBody Map<String, Object> body){
         if (body.get("movieId") == null) {
@@ -60,5 +59,4 @@ public class MovieWatchListController {
     public ResponseEntity<?> deleteAllMovieInMoviesWatchList(){
         return movieWatchListService.deleteAllMovieToWatchList();
     }
-
 }

@@ -49,6 +49,7 @@ public class MovieWatchListService {
                     new ResponseError("Movie không tồn tại.")
             );
         }
+
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         MovieWatchList movieWatchList = movieWatchListRepository.findByUserId(user.get_id());
         if (movieWatchList == null || !movieWatchList.getMovieIds().contains(movie.getId())) {
@@ -69,6 +70,7 @@ public class MovieWatchListService {
                     new ResponseError("Movie không tồn tại.")
             );
         }
+
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         MovieWatchList movieWatchList = movieWatchListRepository.findByUserId(user.get_id());
         if (movieWatchList == null) {
@@ -86,11 +88,11 @@ public class MovieWatchListService {
                 );
             }
         }
+
         movieWatchListRepository.save(movieWatchList);
         return ResponseEntity.ok().body(
                 new ResponseSuccess()
         );
-
     }
 
     public ResponseEntity<?> deleteMovieToWatchList(Integer movieId) {
@@ -100,6 +102,7 @@ public class MovieWatchListService {
                     new ResponseError("Movie không tồn tại.")
             );
         }
+
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         MovieWatchList movieWatchList = movieWatchListRepository.findByUserId(user.get_id());
         if (movieWatchList == null) {

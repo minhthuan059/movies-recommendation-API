@@ -8,5 +8,4 @@ public class MoviesRecommendationApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MoviesRecommendationApiApplication.class, args);
 	}
-
 }

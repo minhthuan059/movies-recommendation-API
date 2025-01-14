@@ -2,9 +2,6 @@ package com.example.movies_recommendation_API.movies.movie_genres;
 
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +12,7 @@ import java.util.Map;
 
 @Service
 public class MovieGenresService {
+
     @Autowired
     private MongoTemplate mongoTemplate;
 

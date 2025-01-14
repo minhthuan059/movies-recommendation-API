@@ -23,7 +23,6 @@ public class MoviesTrendingWeekService {
     public ResponseEntity<?> getAllMovies(
             Integer pageNumber, Integer pageSize
     ) {
-        // Tạo đối tượng Pageable
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         // Tạo Query với phân trang

@@ -18,7 +18,7 @@ public class UserCreateDTO {
     @Size(min = 4, max = 50, message = "Tên người dùng phải có độ dài từ 4 đến 50 ký tự.")
     private String username;
 
-    @NotEmpty(message = "Email khng được bỏ trống.")
+    @NotEmpty(message = "Email không được bỏ trống.")
     @Email(message = "Email không hợp lệ.")
     private String email;
 

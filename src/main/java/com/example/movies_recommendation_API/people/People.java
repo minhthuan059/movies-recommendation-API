@@ -68,7 +68,6 @@ public class People {
 
     @Field("movie_credits")
     private Map<String, Object> movie_credits;
-
 }
 
 

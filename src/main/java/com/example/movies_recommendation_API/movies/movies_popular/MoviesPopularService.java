@@ -3,7 +3,6 @@ package com.example.movies_recommendation_API.movies.movies_popular;
 
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +23,6 @@ public class MoviesPopularService {
     public ResponseEntity<?> getAllMovies(
             Integer pageNumber, Integer pageSize
     ) {
-        // Tạo đối tượng Pageable
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         // Tạo Query với phân trang

@@ -86,11 +86,6 @@ public class MovieService {
         // Thực hiện aggregation
        AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
 
-
-        // Thực thi aggregation
-     //   AggregationResults<Movie> results = mongoTemplate.aggregate(aggregation, Movie.class, Movie.class);
-
-
         // Tổng số phần tử trong collection
         long totalElements = mongoTemplate.count(new Query(), Movie.class);
 
@@ -100,5 +95,4 @@ public class MovieService {
         // Trả về kết quả
         return ResponseEntity.ok(page);
     }
-
 }

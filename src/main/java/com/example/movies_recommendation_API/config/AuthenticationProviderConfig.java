@@ -3,7 +3,6 @@ package com.example.movies_recommendation_API.config;
 import com.example.movies_recommendation_API.users.User;
 import com.example.movies_recommendation_API.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 @Component
 public class AuthenticationProviderConfig implements AuthenticationProvider {
