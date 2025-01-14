@@ -69,7 +69,7 @@ public class MovieController {
                     new ResponseError("Không nhận được danh sách id.")
             );
         }
-        return movieService.getListMovieByIds(
+        return movieService.getListMovieByMongoIds(
                 (List<String>) body.get("ids"),
                 body.get("page") != null ? Integer.parseInt(body.get("page").toString()) : 0,
                 body.get("size") != null ? Integer.parseInt(body.get("size").toString()) : 10

@@ -42,7 +42,7 @@ public class MovieService {
         );
     }
 
-    public ResponseEntity<?> getListMovieByIds(
+    public ResponseEntity<?> getListMovieByMongoIds(
             List<String> ids,
             Integer pageNumber, Integer pageSize
             ){

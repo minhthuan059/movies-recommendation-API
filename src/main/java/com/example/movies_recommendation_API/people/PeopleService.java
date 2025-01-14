@@ -1,6 +1,7 @@
 package com.example.movies_recommendation_API.people;
 
 
+import com.example.movies_recommendation_API.movies.Movie;
 import com.example.movies_recommendation_API.response.ResponseError;
 import com.example.movies_recommendation_API.response.ResponseSuccess;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PeopleService {
@@ -39,6 +42,24 @@ public class PeopleService {
         }
         return ResponseEntity.ok().body(
                 new ResponseSuccess(people)
+        );
+    }
+
+    public ResponseEntity<?> getListPeopleByMongoIds(
+            List<String> ids,
+            Integer pageNumber, Integer pageSize
+    ){
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<People> people = peopleRepository.findByIdIn(ids, pageable);
+        if (people == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseError("Không tìm thấy phim có id yêu cầu")
+            );
+        }
+        return ResponseEntity.ok().body(
+                new ResponseSuccess(
+                        people
+                )
         );
     }
 }

@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(PATCH, "/user/active-account").permitAll()
                         .requestMatchers(PATCH, "/user/reset-password").permitAll()
                         .requestMatchers(GET, "/people/*").permitAll()
+                        .requestMatchers(POST, "/people/*").permitAll()
                         .requestMatchers(POST, "/movie/*").permitAll()
                         .requestMatchers(GET, "/movie/*").permitAll()
                         .requestMatchers( "/login/oauth2/**").permitAll()
